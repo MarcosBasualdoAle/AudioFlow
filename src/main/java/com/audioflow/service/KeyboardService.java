@@ -38,7 +38,8 @@ public class KeyboardService {
 
     /**
      * Registra los atajos de teclado en una Scene.
-     * Debe llamarse después de que la Scene esté creada.
+     * Usa addEventFilter para capturar teclas ANTES de que el sistema de foco las
+     * procese.
      */
     public void registerShortcuts(Scene scene) {
         if (scene == null) {
@@ -46,17 +47,18 @@ public class KeyboardService {
             return;
         }
 
-        // Si ya hay una scene registrada, remover el handler anterior
+        // Si ya hay una scene registrada, remover el filter anterior
         if (registeredScene != null && keyEventHandler != null) {
-            registeredScene.removeEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler::accept);
+            registeredScene.removeEventFilter(KeyEvent.KEY_PRESSED, keyEventHandler::accept);
         }
 
         registeredScene = scene;
 
         keyEventHandler = this::handleKeyPress;
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler::accept);
+        // Usar addEventFilter en lugar de addEventHandler para mayor prioridad
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEventHandler::accept);
 
-        System.out.println("✓ KeyboardService: Atajos de teclado registrados");
+        System.out.println("✓ KeyboardService: Atajos de teclado registrados (con prioridad)");
     }
 
     /**
@@ -64,7 +66,7 @@ public class KeyboardService {
      */
     public void unregisterShortcuts() {
         if (registeredScene != null && keyEventHandler != null) {
-            registeredScene.removeEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler::accept);
+            registeredScene.removeEventFilter(KeyEvent.KEY_PRESSED, keyEventHandler::accept);
             registeredScene = null;
             keyEventHandler = null;
             System.out.println("✓ KeyboardService: Atajos de teclado desregistrados");
@@ -80,12 +82,19 @@ public class KeyboardService {
             return;
         }
 
+        KeyCode code = event.getCode();
+
+        // Consumir inmediatamente las flechas LEFT/RIGHT para evitar navegación de foco
+        if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
+            event.consume();
+        }
+
         KeyAction action = mapKeyToAction(event);
 
         if (action != null) {
             Runnable handler = actionHandlers.get(action);
             if (handler != null) {
-                event.consume(); // Prevenir propagación
+                event.consume();
                 handler.run();
             }
         }

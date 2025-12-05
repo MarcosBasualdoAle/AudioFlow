@@ -3,6 +3,7 @@ package com.audioflow.controller;
 import com.audioflow.model.Playlist;
 import com.audioflow.model.Song;
 import com.audioflow.service.AudioService;
+import com.audioflow.service.KeyboardService;
 import com.audioflow.util.DragDropHandler;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
@@ -44,6 +45,7 @@ import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -419,6 +421,17 @@ public class MainController implements Initializable {
                 audioService.setVolume(newVal.doubleValue() / 100);
                 updateVolumeIcon(newVal.doubleValue());
             });
+
+            // Sincronizar cuando el volumen cambia desde otra parte (Now Playing, teclado)
+            audioService.volumeProperty().addListener((obs, oldVal, newVal) -> {
+                double sliderValue = newVal.doubleValue() * 100;
+                if (Math.abs(volumeSlider.getValue() - sliderValue) > 0.5) {
+                    Platform.runLater(() -> {
+                        volumeSlider.setValue(sliderValue);
+                        updateVolumeIcon(sliderValue);
+                    });
+                }
+            });
         }
     }
 
@@ -550,6 +563,10 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleHomeClick() {
+        // Si estamos en otra vista, volver a la principal
+        if (originalCenterContent != null && rootPane.getCenter() != originalCenterContent) {
+            showMainView();
+        }
         // Mostrar todas las canciones
         if (searchField != null) {
             searchField.clear();
@@ -884,6 +901,145 @@ public class MainController implements Initializable {
 
     public Playlist getPlaylist() {
         return playlist;
+    }
+
+    // ========== NAVEGACIÓN DENTRO DE LA APLICACIÓN ==========
+
+    // Almacenar referencia al contenido principal original
+    private javafx.scene.Node originalCenterContent;
+    private KeyboardService keyboardService;
+    private NowPlayingController nowPlayingController;
+
+    @FXML
+    private void handlePlaylistsClick() {
+        System.out.println("✓ Abriendo Gestor de Playlists...");
+        try {
+            // Guardar el contenido original si no lo hemos guardado
+            if (originalCenterContent == null) {
+                originalCenterContent = rootPane.getCenter();
+            }
+
+            // Cargar la vista del gestor de playlists
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/audioflow/views/playlist-manager-view.fxml"));
+            Parent playlistManagerView = loader.load();
+
+            // Obtener el controlador y configurar callbacks
+            PlaylistManagerController controller = loader.getController();
+            controller.setOnPlaySong(song -> {
+                // Agregar canción a la playlist actual y reproducir
+                if (!playlist.getSongs().contains(song)) {
+                    playlist.addSong(song);
+                }
+                int index = playlist.getSongs().indexOf(song);
+                playlist.goToIndex(index);
+                loadAndPlayCurrentSong();
+                // Volver a la vista principal
+                showMainView();
+            });
+            controller.setOnPlayPlaylist(selectedPlaylist -> {
+                // Agregar todas las canciones y reproducir
+                for (Song song : selectedPlaylist.getSongs()) {
+                    if (!playlist.getSongs().contains(song)) {
+                        playlist.addSong(song);
+                    }
+                }
+                updatePlaylistStats();
+                if (!selectedPlaylist.isEmpty()) {
+                    playlist.goToIndex(playlist.getSongs().indexOf(selectedPlaylist.getSongs().get(0)));
+                    loadAndPlayCurrentSong();
+                }
+                // Volver a la vista principal
+                showMainView();
+            });
+
+            // Reemplazar el contenido central
+            rootPane.setCenter(playlistManagerView);
+
+        } catch (IOException e) {
+            System.err.println("Error abriendo Gestor de Playlists: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleOpenNowPlaying() {
+        if (playlist.isEmpty()) {
+            System.out.println("ℹ️ Agrega canciones primero");
+            return;
+        }
+
+        System.out.println("✓ Abriendo vista Now Playing...");
+        try {
+            // Guardar el contenido original si no lo hemos guardado
+            if (originalCenterContent == null) {
+                originalCenterContent = rootPane.getCenter();
+            }
+
+            // Cargar la vista Now Playing
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/audioflow/views/now-playing-view.fxml"));
+            Parent nowPlayingView = loader.load();
+
+            // Obtener el controlador y configurar
+            nowPlayingController = loader.getController();
+            keyboardService = new KeyboardService();
+            nowPlayingController.setup(audioService, keyboardService);
+            nowPlayingController.updateSongInfo(playlist.getCurrentSong());
+
+            // Callback para cerrar (volver a vista principal)
+            nowPlayingController.setOnClose(this::showMainView);
+
+            // Callbacks para navegación prev/next
+            nowPlayingController.setOnPrevious(() -> {
+                if (playlist.hasPrevious()) {
+                    playlist.previous();
+                    loadAndPlayCurrentSong();
+                    nowPlayingController.updateSongInfo(playlist.getCurrentSong());
+                }
+            });
+
+            nowPlayingController.setOnNext(() -> {
+                if (playlist.hasNext()) {
+                    playlist.next();
+                    loadAndPlayCurrentSong();
+                    nowPlayingController.updateSongInfo(playlist.getCurrentSong());
+                }
+            });
+
+            // Reemplazar el contenido central
+            rootPane.setCenter(nowPlayingView);
+
+            // Configurar acciones de teclado en la escena actual
+            Scene currentScene = rootPane.getScene();
+            if (currentScene != null) {
+                keyboardService.registerShortcuts(currentScene);
+            }
+
+            nowPlayingController.show();
+
+        } catch (IOException e) {
+            System.err.println("Error abriendo Now Playing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Vuelve a mostrar la vista principal
+     */
+    private void showMainView() {
+        if (originalCenterContent != null) {
+            rootPane.setCenter(originalCenterContent);
+            System.out.println("✓ Volviendo a vista principal...");
+
+            // Desregistrar atajos de teclado si estaban activos
+            if (keyboardService != null) {
+                keyboardService.unregisterShortcuts();
+            }
+
+            // Actualizar la lista de canciones
+            songListView.refresh();
+            updatePlaylistStats();
+        }
     }
 
     // ========== NOTIFICACIONES TOAST ==========

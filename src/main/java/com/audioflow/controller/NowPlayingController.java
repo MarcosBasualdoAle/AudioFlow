@@ -14,6 +14,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -84,6 +86,9 @@ public class NowPlayingController implements Initializable {
     private boolean shuffleEnabled = false;
     private RepeatMode repeatMode = RepeatMode.OFF;
     private Runnable onCloseCallback;
+    private Runnable onPreviousCallback;
+    private Runnable onNextCallback;
+    private Song currentSong; // Canción actual para persistir rating
 
     public enum RepeatMode {
         OFF, ALL, ONE
@@ -112,9 +117,13 @@ public class NowPlayingController implements Initializable {
         bindToAudioService();
         setupKeyboardShortcuts();
 
-        // Conectar visualizador
+        // Conectar visualizador con datos reales del MediaPlayer
         if (audioVisualizer != null) {
-            audioVisualizer.setAnalyzerService(analyzerService);
+            // Registrar spectrum listener para datos reales
+            audioService.setAudioSpectrumListener(
+                    (double timestamp, double duration, float[] magnitudes, float[] phases) -> {
+                        audioVisualizer.updateSpectrum(timestamp, duration, magnitudes, phases);
+                    });
         }
     }
 
@@ -178,6 +187,23 @@ public class NowPlayingController implements Initializable {
                     this::handleNext,
                     this::handlePrevious,
                     this::handleClose);
+
+            // Agregar handlers de volumen
+            keyboardService.setVolumeHandlers(
+                    () -> changeVolume(5), // UP = +5%
+                    () -> changeVolume(-5), // DOWN = -5%
+                    this::handleMute); // M = mute toggle
+        }
+    }
+
+    /**
+     * Cambia el volumen en el porcentaje indicado
+     */
+    private void changeVolume(double delta) {
+        if (audioService != null && volumeSlider != null) {
+            double newValue = volumeSlider.getValue() + delta;
+            newValue = Math.max(0, Math.min(100, newValue));
+            volumeSlider.setValue(newValue);
         }
     }
 
@@ -192,6 +218,12 @@ public class NowPlayingController implements Initializable {
                     audioService.seekToPercent(progressSlider.getValue() / 100);
                 }
             });
+            // Evitar que el slider capture las flechas LEFT/RIGHT (usadas para prev/next)
+            progressSlider.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT) {
+                    e.consume(); // No dejar que el slider procese estas teclas
+                }
+            });
         }
     }
 
@@ -201,6 +233,12 @@ public class NowPlayingController implements Initializable {
                 if (audioService != null) {
                     audioService.setVolume(newVal.doubleValue() / 100);
                     updateVolumeIcon(newVal.doubleValue());
+                }
+            });
+            // Evitar que el slider capture las flechas LEFT/RIGHT (usadas para prev/next)
+            volumeSlider.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT) {
+                    e.consume(); // No dejar que el slider procese estas teclas
                 }
             });
         }
@@ -232,13 +270,17 @@ public class NowPlayingController implements Initializable {
     @FXML
     private void handlePrevious() {
         showFeedback("fas-step-backward");
-        // La lógica de navegación está en el controlador principal
+        if (onPreviousCallback != null) {
+            onPreviousCallback.run();
+        }
     }
 
     @FXML
     private void handleNext() {
         showFeedback("fas-step-forward");
-        // La lógica de navegación está en el controlador principal
+        if (onNextCallback != null) {
+            onNextCallback.run();
+        }
     }
 
     @FXML
@@ -287,6 +329,8 @@ public class NowPlayingController implements Initializable {
      * Actualiza la UI con la información de una canción
      */
     public void updateSongInfo(Song song) {
+        this.currentSong = song;
+
         if (song != null) {
             if (songTitleLabel != null)
                 songTitleLabel.setText(song.getTitle());
@@ -305,6 +349,16 @@ public class NowPlayingController implements Initializable {
                 if (albumPlaceholder != null)
                     albumPlaceholder.setVisible(true);
             }
+
+            // Conectar StarRating con la canción
+            if (starRating != null) {
+                starRating.setRating(song.getRating());
+                starRating.ratingProperty().addListener((obs, oldVal, newVal) -> {
+                    if (currentSong != null) {
+                        currentSong.setRating(newVal.intValue());
+                    }
+                });
+            }
         } else {
             if (songTitleLabel != null)
                 songTitleLabel.setText("Sin canción");
@@ -314,6 +368,8 @@ public class NowPlayingController implements Initializable {
                 albumArtView.setVisible(false);
             if (albumPlaceholder != null)
                 albumPlaceholder.setVisible(true);
+            if (starRating != null)
+                starRating.setRating(0);
         }
     }
 
@@ -322,6 +378,20 @@ public class NowPlayingController implements Initializable {
      */
     public void setOnClose(Runnable callback) {
         this.onCloseCallback = callback;
+    }
+
+    /**
+     * Establece callback para canción anterior
+     */
+    public void setOnPrevious(Runnable callback) {
+        this.onPreviousCallback = callback;
+    }
+
+    /**
+     * Establece callback para siguiente canción
+     */
+    public void setOnNext(Runnable callback) {
+        this.onNextCallback = callback;
     }
 
     /**
@@ -334,9 +404,17 @@ public class NowPlayingController implements Initializable {
         fadeIn.setToValue(1.0);
         fadeIn.play();
 
-        // Iniciar visualizador si hay reproducción
-        if (audioService != null && audioService.isPlaying()) {
-            audioVisualizer.start();
+        // Sincronizar estado del botón play/pause con el reproductor
+        if (audioService != null) {
+            boolean isPlaying = audioService.isPlaying();
+            updatePlayPauseIcon(isPlaying);
+
+            // Iniciar/detener visualizador según estado
+            if (isPlaying) {
+                audioVisualizer.start();
+            } else {
+                audioVisualizer.stop(); // Mostrará barras vacías estáticas
+            }
         }
     }
 

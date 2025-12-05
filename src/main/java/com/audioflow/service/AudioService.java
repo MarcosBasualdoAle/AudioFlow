@@ -2,6 +2,7 @@ package com.audioflow.service;
 
 import com.audioflow.model.Song;
 import javafx.beans.property.*;
+import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -28,6 +29,11 @@ public class AudioService {
     // Listeners para eventos
     private Runnable onEndOfMedia;
     private Runnable onReady;
+
+    // Spectrum listener para visualizador
+    private AudioSpectrumListener spectrumListener;
+    private static final int SPECTRUM_BANDS = 64;
+    private static final double SPECTRUM_INTERVAL = 0.05; // 50ms = 20fps
 
     public AudioService() {
         // Inicialización
@@ -88,6 +94,13 @@ public class AudioService {
             mediaPlayer.statusProperty().addListener((obs, oldStatus, newStatus) -> {
                 playing.set(newStatus == MediaPlayer.Status.PLAYING);
             });
+
+            // Configurar analizador de espectro para visualizador
+            mediaPlayer.setAudioSpectrumNumBands(SPECTRUM_BANDS);
+            mediaPlayer.setAudioSpectrumInterval(SPECTRUM_INTERVAL);
+            if (spectrumListener != null) {
+                mediaPlayer.setAudioSpectrumListener(spectrumListener);
+            }
 
         } catch (Exception e) {
             System.err.println("Error al cargar la canción: " + e.getMessage());
@@ -265,5 +278,22 @@ public class AudioService {
             mediaPlayer.dispose();
             mediaPlayer = null;
         }
+    }
+
+    /**
+     * Establece el listener para análisis de espectro (para visualizador)
+     */
+    public void setAudioSpectrumListener(AudioSpectrumListener listener) {
+        this.spectrumListener = listener;
+        if (mediaPlayer != null) {
+            mediaPlayer.setAudioSpectrumListener(listener);
+        }
+    }
+
+    /**
+     * Obtiene el MediaPlayer actual (para configuraciones avanzadas)
+     */
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
     }
 }

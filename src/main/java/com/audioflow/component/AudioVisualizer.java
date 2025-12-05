@@ -49,10 +49,37 @@ public class AudioVisualizer extends Canvas {
     }
 
     /**
-     * Conecta el visualizador con el servicio de análisis
+     * Conecta el visualizador con el servicio de análisis (datos simulados)
      */
     public void setAnalyzerService(AudioAnalyzerService service) {
         this.analyzerService = service;
+    }
+
+    // Almacena datos reales del espectro
+    private float[] realMagnitudes;
+    private boolean useRealData = false;
+
+    /**
+     * Actualiza los datos del espectro con datos reales del MediaPlayer
+     */
+    public void updateSpectrum(double timestamp, double duration, float[] magnitudes, float[] phases) {
+        if (magnitudes != null && magnitudes.length > 0) {
+            // Convertir magnitudes de dB (-60 a 0) a valores normalizados (0 a 1)
+            this.realMagnitudes = new float[magnitudes.length];
+            for (int i = 0; i < magnitudes.length; i++) {
+                // Los valores vienen en dB, típicamente entre -60 y 0
+                float normalized = (magnitudes[i] + 60) / 60;
+
+                // Aplicar boost progresivo a frecuencias altas (compensar roll-off natural)
+                // Las frecuencias altas tienen mucha menos energía, amplificamos agresivamente
+                float position = (float) i / magnitudes.length;
+                float highFreqBoost = 1.0f + (position * position * position * 4.0f); // Boost cúbico hasta 5x
+
+                normalized = normalized * highFreqBoost;
+                this.realMagnitudes[i] = Math.max(0, Math.min(1, normalized));
+            }
+            this.useRealData = true;
+        }
     }
 
     /**
@@ -73,7 +100,8 @@ public class AudioVisualizer extends Canvas {
         if (isRunning) {
             isRunning = false;
             animationTimer.stop();
-            clearCanvas();
+            // Mostrar barras vacías estáticas en lugar de limpiar
+            resetBarsToMinimum();
             System.out.println("✓ AudioVisualizer: Animación detenida");
         }
     }
@@ -102,9 +130,11 @@ public class AudioVisualizer extends Canvas {
         gc.setFill(BACKGROUND_COLOR);
         gc.clearRect(0, 0, width, height);
 
-        // Obtener datos del espectro
+        // Obtener datos del espectro (priorizar datos reales)
         float[] magnitudes;
-        if (analyzerService != null) {
+        if (useRealData && realMagnitudes != null && realMagnitudes.length > 0) {
+            magnitudes = realMagnitudes;
+        } else if (analyzerService != null) {
             magnitudes = analyzerService.getMagnitudes();
         } else {
             // Datos de demostración cuando no hay servicio conectado
@@ -194,6 +224,43 @@ public class AudioVisualizer extends Canvas {
         // Resetear alturas
         for (int i = 0; i < displayHeights.length; i++) {
             displayHeights[i] = 0;
+        }
+    }
+
+    /**
+     * Resetea las barras a altura mínima (barras vacías estáticas)
+     */
+    private void resetBarsToMinimum() {
+        // Poner todas las alturas en mínimo
+        for (int i = 0; i < displayHeights.length; i++) {
+            displayHeights[i] = MIN_BAR_HEIGHT;
+        }
+        useRealData = false;
+        // Renderizar una vez para mostrar barras vacías
+        renderStaticBars();
+    }
+
+    /**
+     * Renderiza las barras en estado estático (sin animación)
+     */
+    private void renderStaticBars() {
+        GraphicsContext gc = getGraphicsContext2D();
+        double width = getWidth();
+        double height = getHeight();
+
+        gc.clearRect(0, 0, width, height);
+
+        double totalBarWidth = width / numBars;
+        double barWidth = totalBarWidth * (1 - BAR_GAP_RATIO);
+        double gap = totalBarWidth * BAR_GAP_RATIO;
+
+        for (int i = 0; i < numBars; i++) {
+            double barHeight = MIN_BAR_HEIGHT;
+            double x = i * totalBarWidth + gap / 2;
+            double y = height - barHeight;
+
+            gc.setFill(BAR_COLOR_LOW.deriveColor(0, 1, 0.5, 0.5)); // Color más tenue
+            gc.fillRoundRect(x, y, barWidth, barHeight, CORNER_RADIUS, CORNER_RADIUS);
         }
     }
 

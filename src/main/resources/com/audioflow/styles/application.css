@@ -147,6 +147,14 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 15, 0, 0, 8);
 }
 
+.clickable-cover {
+    -fx-cursor: hand;
+}
+
+.clickable-cover:hover {
+    -fx-effect: dropshadow(gaussian, rgba(29, 185, 84, 0.4), 20, 0, 0, 8);
+}
+
 .cover-placeholder-icon {
     -fx-icon-color: #4B5563;
     -fx-fill: #4B5563;
@@ -627,4 +635,219 @@
 .song-cell-drag-over {
     -fx-background-color: rgba(59, 130, 246, 0.15);
     -fx-padding: 15 0 15 0;
+}
+
+/* ===================== PLAYLIST MANAGER STYLES ===================== */
+
+.playlist-manager-root {
+    -fx-background-color: #121212;
+}
+
+.manager-header {
+    -fx-background-color: #181818;
+}
+
+.header-icon {
+    -fx-icon-color: #3B82F6;
+    -fx-fill: #3B82F6;
+}
+
+.manager-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.header-separator {
+    -fx-background-color: #282828;
+}
+
+.playlists-panel,
+.songs-panel {
+    -fx-background-color: #181818;
+}
+
+.section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #b3b3b3;
+    -fx-padding: 0 0 10 0;
+}
+
+.playlist-list,
+.songs-list {
+    -fx-background-color: transparent;
+    -fx-background: #181818;
+}
+
+.playlist-list .list-cell,
+.songs-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFFFFF;
+    -fx-padding: 10 15;
+}
+
+.playlist-list .list-cell:filled:hover,
+.songs-list .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.playlist-list .list-cell:filled:selected,
+.songs-list .list-cell:filled:selected {
+    -fx-background-color: rgba(59, 130, 246, 0.3);
+    -fx-text-fill: #FFFFFF;
+}
+
+.playlist-list .list-cell:filled:selected:hover,
+.songs-list .list-cell:filled:selected:hover {
+    -fx-background-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Override any default white backgrounds */
+.playlist-list .scroll-bar,
+.songs-list .scroll-bar,
+.playlist-list .virtual-flow,
+.songs-list .virtual-flow,
+.playlist-list .clipped-container,
+.songs-list .clipped-container {
+    -fx-background-color: transparent;
+}
+
+.playlist-info {
+    -fx-padding: 10 0;
+}
+
+.playlist-icon-container {
+    -fx-background-color: #282828;
+    -fx-background-radius: 8;
+}
+
+.playlist-icon {
+    -fx-icon-color: #3B82F6;
+    -fx-fill: #3B82F6;
+}
+
+.playlist-name-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.song-count-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #b3b3b3;
+}
+
+.drop-zone-small {
+    -fx-background-color: rgba(59, 130, 246, 0.1);
+    -fx-background-radius: 8;
+    -fx-border-color: #3B82F6;
+    -fx-border-style: dashed;
+    -fx-border-radius: 8;
+    -fx-padding: 15;
+    -fx-min-height: 60;
+}
+
+.drop-icon-small {
+    -fx-icon-color: #3B82F6;
+    -fx-fill: #3B82F6;
+}
+
+.drop-hint-small {
+    -fx-font-size: 12px;
+    -fx-text-fill: #3B82F6;
+}
+
+/* Dialog */
+.dialog-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dialog-box {
+    -fx-background-color: #282828;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0, 0, 10);
+}
+
+.dialog-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.field-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #b3b3b3;
+}
+
+.dialog-input {
+    -fx-background-color: #404040;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #808080;
+    -fx-padding: 12;
+    -fx-background-radius: 6;
+}
+
+.error-label {
+    -fx-text-fill: #ff4444;
+    -fx-font-size: 12px;
+}
+
+.dialog-btn-primary {
+    -fx-background-color: #3B82F6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 25;
+    -fx-background-radius: 20;
+}
+
+.dialog-btn-primary:hover {
+    -fx-background-color: #60A5FA;
+}
+
+.dialog-btn-secondary {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-padding: 10 20;
+}
+
+.dialog-btn-secondary:hover {
+    -fx-text-fill: #3B82F6;
+}
+
+.primary-btn {
+    -fx-background-color: #3B82F6;
+    -fx-text-fill: white;
+    -fx-padding: 10 20;
+    -fx-background-radius: 20;
+}
+
+.primary-btn:hover {
+    -fx-background-color: #60A5FA;
+}
+
+.btn-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* SplitPane divider */
+.split-pane {
+    -fx-background-color: #181818;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.split-pane>.split-pane-divider {
+    -fx-background-color: #282828;
+    -fx-padding: 0 2;
+}
+
+/* Remove any white borders from playlist manager */
+.playlist-manager-root,
+.playlist-manager-root .split-pane,
+.playlist-manager-root .playlists-panel,
+.playlist-manager-root .songs-panel {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
