@@ -44,48 +44,48 @@ public class StarRating extends HBox {
 
         // Crear las 5 estrellas
         for (int i = 0; i < STAR_COUNT; i++) {
-            final int starIndex = i + 1; // 1-based
             FontIcon star = new FontIcon(STAR_EMPTY_ICON);
             star.setIconSize(ICON_SIZE);
             star.setIconColor(javafx.scene.paint.Color.web(STAR_EMPTY_COLOR));
-
-            // Eventos de mouse
-            star.setOnMouseEntered(e -> {
-                if (!readOnly) {
-                    isHovering = true;
-                    hoverRating = starIndex;
-                    updateStarsDisplay();
-                }
-            });
-
-            star.setOnMouseExited(e -> {
-                if (!readOnly) {
-                    isHovering = false;
-                    hoverRating = 0;
-                    updateStarsDisplay();
-                }
-            });
-
-            star.setOnMouseClicked(e -> {
-                if (!readOnly) {
-                    // Si se hace clic en el rating actual, resetear a 0
-                    if (rating.get() == starIndex) {
-                        setRating(0);
-                    } else {
-                        setRating(starIndex);
-                    }
-                }
-            });
-
+            star.setMouseTransparent(true); // Hacer que las estrellas ignoren eventos de mouse
             stars[i] = star;
             getChildren().add(star);
         }
 
-        // Cuando el mouse sale del componente completo
+        // Eventos de mouse en el CONTENEDOR (no en cada estrella)
+        setOnMouseMoved(e -> {
+            if (!readOnly) {
+                isHovering = true;
+                // Calcular qué estrella basado en posición X
+                double starWidth = getWidth() / STAR_COUNT;
+                int starIndex = (int) Math.ceil(e.getX() / starWidth);
+                hoverRating = Math.max(1, Math.min(STAR_COUNT, starIndex));
+                updateStarsDisplay();
+            }
+        });
+
         setOnMouseExited(e -> {
-            isHovering = false;
-            hoverRating = 0;
-            updateStarsDisplay();
+            if (!readOnly) {
+                isHovering = false;
+                hoverRating = 0;
+                updateStarsDisplay();
+            }
+        });
+
+        setOnMouseClicked(e -> {
+            if (!readOnly) {
+                // Calcular qué estrella basado en posición X
+                double starWidth = getWidth() / STAR_COUNT;
+                int starIndex = (int) Math.ceil(e.getX() / starWidth);
+                int clickedRating = Math.max(1, Math.min(STAR_COUNT, starIndex));
+
+                // Si se hace clic en el rating actual, resetear a 0
+                if (rating.get() == clickedRating) {
+                    setRating(0);
+                } else {
+                    setRating(clickedRating);
+                }
+            }
         });
     }
 

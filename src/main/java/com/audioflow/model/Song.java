@@ -17,6 +17,7 @@ public class Song {
     private final StringProperty filePath;
     private final ObjectProperty<Image> albumArt;
     private final BooleanProperty playing;
+    private final IntegerProperty rating; // 0-5 estrellas
 
     /**
      * Constructor completo
@@ -29,6 +30,7 @@ public class Song {
         this.filePath = new SimpleStringProperty(filePath);
         this.albumArt = new SimpleObjectProperty<>();
         this.playing = new SimpleBooleanProperty(false);
+        this.rating = new SimpleIntegerProperty(0);
     }
 
     /**
@@ -80,6 +82,10 @@ public class Song {
         return playing.get();
     }
 
+    public int getRating() {
+        return rating.get();
+    }
+
     // ========== SETTERS ==========
 
     public void setTitle(String value) {
@@ -110,6 +116,10 @@ public class Song {
         playing.set(value);
     }
 
+    public void setRating(int value) {
+        rating.set(Math.max(0, Math.min(5, value))); // Limitar a 0-5
+    }
+
     // ========== PROPIEDADES (para binding) ==========
 
     public StringProperty titleProperty() {
@@ -138,6 +148,10 @@ public class Song {
 
     public BooleanProperty playingProperty() {
         return playing;
+    }
+
+    public IntegerProperty ratingProperty() {
+        return rating;
     }
 
     /**

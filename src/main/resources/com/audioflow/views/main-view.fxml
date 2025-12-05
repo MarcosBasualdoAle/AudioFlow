@@ -49,6 +49,10 @@
                            onAction="#handleAllSongsClick" alignment="CENTER_LEFT" maxWidth="Infinity">
                     <graphic><FontIcon iconLiteral="fas-music" iconSize="16"/></graphic>
                 </JFXButton>
+                <JFXButton fx:id="playlistsBtn" text="Mis Playlists" styleClass="menu-btn" 
+                           onAction="#handlePlaylistsClick" alignment="CENTER_LEFT" maxWidth="Infinity">
+                    <graphic><FontIcon iconLiteral="fas-list" iconSize="16"/></graphic>
+                </JFXButton>
             </VBox>
             
             <!-- Espacio flexible -->
@@ -65,8 +69,9 @@
             <HBox styleClass="playlist-header" spacing="25" alignment="CENTER_LEFT">
                 <padding><Insets top="30" right="30" bottom="25" left="30"/></padding>
                 
-                <!-- Imagen de Playlist -->
-                <StackPane fx:id="playlistCover" styleClass="playlist-cover" prefWidth="180" prefHeight="180">
+                <!-- Imagen de Playlist (clic abre Now Playing) -->
+                <StackPane fx:id="playlistCover" styleClass="playlist-cover clickable-cover" prefWidth="180" prefHeight="180"
+                           onMouseClicked="#handleOpenNowPlaying">
                     <VBox alignment="CENTER" spacing="5">
                         <FontIcon iconLiteral="fas-compact-disc" iconSize="60" styleClass="cover-placeholder-icon"/>
                     </VBox>
