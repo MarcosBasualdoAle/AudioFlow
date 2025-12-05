@@ -4,6 +4,7 @@ import com.audioflow.model.Song;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import javafx.scene.image.Image;
+import javafx.util.Duration;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -45,11 +46,18 @@ public class DragDropHandler {
         String artist = "Artista Desconocido";
         String album = "Álbum Desconocido";
         Image albumArt = null;
+        Duration duration = null;
 
         // Intentar extraer metadatos ID3 si es MP3
         if (file.getName().toLowerCase().endsWith(".mp3")) {
             try {
                 Mp3File mp3File = new Mp3File(file);
+
+                // Extraer duración del archivo MP3
+                long lengthInMilliseconds = mp3File.getLengthInMilliseconds();
+                if (lengthInMilliseconds > 0) {
+                    duration = Duration.millis(lengthInMilliseconds);
+                }
 
                 if (mp3File.hasId3v2Tag()) {
                     ID3v2 id3v2Tag = mp3File.getId3v2Tag();
@@ -85,9 +93,20 @@ public class DragDropHandler {
             }
         }
 
-        Song song = new Song(title, artist, album, null, filePath, albumArt);
-        System.out.println("✓ Agregado: " + title + " - " + artist);
+        Song song = new Song(title, artist, album, duration, filePath, albumArt);
+        String durationStr = duration != null ? formatDuration(duration) : "--:--";
+        System.out.println("✓ Agregado: " + title + " - " + artist + " (" + durationStr + ")");
         return song;
+    }
+
+    /**
+     * Formatea una duración como mm:ss
+     */
+    private static String formatDuration(Duration duration) {
+        int totalSeconds = (int) duration.toSeconds();
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        return String.format("%d:%02d", minutes, seconds);
     }
 
     /**
