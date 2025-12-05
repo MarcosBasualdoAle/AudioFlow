@@ -92,6 +92,8 @@ public class MainController implements Initializable {
     // Lista de Canciones
     @FXML
     private JFXListView<Song> songListView;
+    @FXML
+    private VBox emptyPlaceholder;
 
     // Player Bar
     @FXML
@@ -191,6 +193,12 @@ public class MainController implements Initializable {
         filteredSongs = new FilteredList<>(playlist.getSongs(), p -> true);
         songListView.setItems(filteredSongs);
 
+        // Mostrar/ocultar placeholder según si hay canciones
+        updateEmptyPlaceholderVisibility();
+        playlist.getSongs().addListener((javafx.collections.ListChangeListener<Song>) change -> {
+            updateEmptyPlaceholderVisibility();
+        });
+
         songListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Song selected = songListView.getSelectionModel().getSelectedItem();
@@ -254,6 +262,56 @@ public class MainController implements Initializable {
                 container.setAlignment(Pos.CENTER_LEFT);
                 container.setSpacing(12);
                 container.getStyleClass().add("song-cell-container");
+
+                // Drag-to-reorder: iniciar drag
+                container.setOnDragDetected(event -> {
+                    if (getItem() != null) {
+                        javafx.scene.input.Dragboard db = startDragAndDrop(javafx.scene.input.TransferMode.MOVE);
+                        javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
+                        content.putString(String.valueOf(getIndex()));
+                        db.setContent(content);
+                        event.consume();
+                    }
+                });
+
+                // Drag-to-reorder: drag over
+                setOnDragOver(event -> {
+                    if (event.getGestureSource() != this && event.getDragboard().hasString()) {
+                        event.acceptTransferModes(javafx.scene.input.TransferMode.MOVE);
+                        container.getStyleClass().add("song-cell-drag-over");
+                    }
+                    event.consume();
+                });
+
+                // Drag-to-reorder: salir del área
+                setOnDragExited(event -> {
+                    container.getStyleClass().remove("song-cell-drag-over");
+                    event.consume();
+                });
+
+                // Drag-to-reorder: soltar
+                setOnDragDropped(event -> {
+                    javafx.scene.input.Dragboard db = event.getDragboard();
+                    boolean success = false;
+                    if (db.hasString()) {
+                        int draggedIdx = Integer.parseInt(db.getString());
+                        int targetIdx = getIndex();
+                        if (draggedIdx != targetIdx && targetIdx >= 0 && targetIdx < playlist.getSongs().size()) {
+                            Song draggedSong = playlist.getSongs().get(draggedIdx);
+                            playlist.getSongs().remove(draggedIdx);
+                            playlist.getSongs().add(targetIdx, draggedSong);
+                            success = true;
+                        }
+                    }
+                    event.setDropCompleted(success);
+                    container.getStyleClass().remove("song-cell-drag-over");
+                    event.consume();
+                });
+
+                setOnDragDone(event -> {
+                    container.getStyleClass().remove("song-cell-drag-over");
+                    event.consume();
+                });
             }
 
             @Override
@@ -297,6 +355,20 @@ public class MainController implements Initializable {
                 }
             }
         });
+    }
+
+    private void updateEmptyPlaceholderVisibility() {
+        boolean isEmpty = playlist.getSongs().isEmpty();
+        if (emptyPlaceholder != null) {
+            emptyPlaceholder.setVisible(isEmpty);
+            emptyPlaceholder.setManaged(isEmpty);
+        }
+        if (songListView != null) {
+            songListView.setVisible(!isEmpty);
+        }
+        if (isEmpty) {
+            System.out.println("No hay canciones");
+        }
     }
 
     private void setupVolumeControl() {
@@ -936,20 +1008,20 @@ public class MainController implements Initializable {
             toast.setAlignment(Pos.CENTER_LEFT);
             toast.setPadding(new Insets(12, 20, 12, 20));
             toast.setStyle(
-                    "-fx-background-color: " + (isWarning ? "rgba(234, 179, 8, 0.95)" : "rgba(34, 197, 94, 0.95)") + ";"
-                            +
+                    "-fx-background-color: " + (isWarning ? "rgba(234, 179, 8, 0.95)" : "rgba(59, 130, 246, 0.95)")
+                            + ";" +
                             "-fx-background-radius: 8;" +
                             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 4);");
 
             // Icono
             FontIcon icon = new FontIcon(isWarning ? "fas-exclamation-circle" : "fas-check-circle");
             icon.setIconSize(18);
-            icon.setIconColor(isWarning ? Color.rgb(113, 63, 18) : Color.rgb(20, 83, 45));
+            icon.setIconColor(isWarning ? Color.rgb(113, 63, 18) : Color.WHITE);
 
             // Texto
             Label label = new Label(message);
             label.setStyle(
-                    "-fx-text-fill: " + (isWarning ? "#713f12" : "#14532d") + ";" +
+                    "-fx-text-fill: " + (isWarning ? "#713f12" : "#FFFFFF") + ";" +
                             "-fx-font-size: 13px;" +
                             "-fx-font-weight: bold;");
 
