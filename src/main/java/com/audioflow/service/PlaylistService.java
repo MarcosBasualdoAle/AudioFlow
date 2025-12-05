@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
+import com.audioflow.util.DragDropHandler;
 
 /**
  * Servicio para persistencia de playlists en formato JSON.
@@ -84,12 +85,22 @@ public class PlaylistService {
                 List<Map<String, String>> songs = (List<Map<String, String>>) p.get("songs");
                 if (songs != null) {
                     for (Map<String, String> songData : songs) {
-                        Song song = new Song(
-                                songData.getOrDefault("title", "Unknown"),
-                                songData.getOrDefault("artist", "Unknown"),
-                                songData.getOrDefault("album", "Unknown"),
-                                javafx.util.Duration.ZERO,
-                                songData.getOrDefault("filePath", ""));
+                        String filePath = songData.getOrDefault("filePath", "");
+                        File file = new File(filePath);
+
+                        Song song;
+                        // Si el archivo existe, extraer metadata completa incluyendo album art
+                        if (file.exists() && file.isFile()) {
+                            song = DragDropHandler.createSongFromFile(file);
+                        } else {
+                            // Archivo no existe, usar datos guardados
+                            song = new Song(
+                                    songData.getOrDefault("title", "Unknown"),
+                                    songData.getOrDefault("artist", "Unknown"),
+                                    songData.getOrDefault("album", "Unknown"),
+                                    javafx.util.Duration.ZERO,
+                                    filePath);
+                        }
                         playlist.addSong(song);
                     }
                 }

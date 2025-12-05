@@ -167,7 +167,8 @@
                 
                 <!-- Info Canción Actual (izquierda) -->
                 <HBox fx:id="nowPlayingInfo" spacing="12" alignment="CENTER_LEFT" prefWidth="280">
-                    <StackPane fx:id="nowPlayingCoverContainer" styleClass="now-playing-cover" prefWidth="50" prefHeight="50">
+                    <StackPane fx:id="nowPlayingCoverContainer" styleClass="now-playing-cover clickable-cover" prefWidth="50" prefHeight="50"
+                               onMouseClicked="#handleOpenNowPlaying">
                         <ImageView fx:id="nowPlayingAlbumArt" fitWidth="50" fitHeight="50" preserveRatio="true" styleClass="np-album-art"/>
                         <FontIcon fx:id="nowPlayingPlaceholder" iconLiteral="fas-compact-disc" iconSize="24" styleClass="np-cover-icon"/>
                     </StackPane>
