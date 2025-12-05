@@ -34,6 +34,18 @@ public class Playlist {
     }
 
     /**
+     * Verifica si ya existe una canción con la misma ruta de archivo
+     */
+    public boolean containsSongByPath(String filePath) {
+        for (Song song : songs) {
+            if (song.getFilePath().equals(filePath)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Elimina una canción de la playlist
      */
     public void removeSong(Song song) {
