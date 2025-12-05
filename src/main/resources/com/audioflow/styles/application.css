@@ -1,0 +1,294 @@
+/*
+ * AudioFlow - Estilos CSS Modernos
+ * Tema: Oscuro con acentos verdes (estilo Spotify)
+ */
+
+/* ==================== ROOT Y CONTENEDORES ==================== */
+.root-pane {
+    -fx-background-color: #121212;
+}
+
+.main-container {
+    -fx-background-color: transparent;
+}
+
+/* ==================== BARRA LATERAL ==================== */
+.sidebar {
+    -fx-background-color: #000000;
+    -fx-background-radius: 0;
+}
+
+.logo-container {
+    -fx-padding: 10 0 10 0;
+}
+
+.logo-icon {
+    -fx-icon-color: #1DB954;
+    -fx-fill: #1DB954;
+}
+
+.app-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+.sidebar-separator {
+    -fx-background-color: #404040;
+}
+
+.section-title {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #727272;
+    -fx-padding: 15 0 5 0;
+}
+
+/* ==================== LISTA DE CANCIONES ==================== */
+.song-list {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.song-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #B3B3B3;
+    -fx-font-size: 14px;
+    -fx-padding: 12 10 12 10;
+    -fx-background-radius: 4;
+}
+
+.song-list .list-cell:hover {
+    -fx-background-color: #333333;
+}
+
+.song-list .list-cell:selected {
+    -fx-background-color: #282828;
+    -fx-text-fill: #FFFFFF;
+}
+
+.song-list .list-cell:selected:hover {
+    -fx-background-color: #333333;
+}
+
+/* Scrollbar */
+.song-list .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+
+.song-list .scroll-bar:vertical .thumb {
+    -fx-background-color: #727272;
+    -fx-background-radius: 4;
+}
+
+.song-list .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #B3B3B3;
+}
+
+/* ==================== ZONA DE DROP ==================== */
+.drop-zone {
+    -fx-background-color: rgba(40, 40, 40, 0.5);
+    -fx-background-radius: 8;
+    -fx-border-color: #404040;
+    -fx-border-radius: 8;
+    -fx-border-style: dashed;
+    -fx-border-width: 2;
+    -fx-padding: 30;
+    -fx-min-height: 150;
+}
+
+.drop-zone:hover {
+    -fx-background-color: rgba(29, 185, 84, 0.1);
+    -fx-border-color: #1DB954;
+}
+
+.drop-icon {
+    -fx-icon-color: #727272;
+    -fx-fill: #727272;
+}
+
+.drop-hint {
+    -fx-font-size: 14px;
+    -fx-text-fill: #B3B3B3;
+}
+
+.drop-hint-sub {
+    -fx-font-size: 12px;
+    -fx-text-fill: #727272;
+}
+
+/* ==================== ÁREA CENTRAL ==================== */
+.center-area {
+    -fx-background-color: linear-gradient(to bottom, #1a1a1a 0%, #121212 100%);
+}
+
+.album-art-container {
+    -fx-background-color: #282828;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 5);
+}
+
+.album-placeholder-icon {
+    -fx-icon-color: #727272;
+    -fx-fill: #727272;
+}
+
+.album-placeholder-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #727272;
+}
+
+/* ==================== INFO DE CANCIÓN ACTUAL ==================== */
+.now-playing-info {
+    -fx-padding: 20 0 10 0;
+}
+
+.song-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.artist-name {
+    -fx-font-size: 16px;
+    -fx-text-fill: #B3B3B3;
+}
+
+/* ==================== BARRA DEL REPRODUCTOR ==================== */
+.player-bar {
+    -fx-background-color: #181818;
+    -fx-border-color: #404040;
+    -fx-border-width: 1 0 0 0;
+}
+
+.time-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #727272;
+    -fx-min-width: 40;
+}
+
+/* ==================== SLIDERS ==================== */
+.progress-slider,
+.volume-slider {
+    -fx-background-color: transparent;
+}
+
+.progress-slider .track,
+.volume-slider .track {
+    -fx-background-color: #404040;
+    -fx-background-radius: 2;
+    -fx-pref-height: 4;
+}
+
+.progress-slider .thumb,
+.volume-slider .thumb {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 12;
+    -fx-pref-height: 12;
+    -fx-cursor: hand;
+}
+
+.progress-slider .thumb:hover,
+.volume-slider .thumb:hover {
+    -fx-background-color: #1DB954;
+}
+
+/* ==================== BOTONES DE CONTROL ==================== */
+.control-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50%;
+    -fx-min-width: 45;
+    -fx-min-height: 45;
+    -fx-cursor: hand;
+}
+
+.control-btn .ikonli-font-icon {
+    -fx-icon-color: #B3B3B3;
+    -fx-fill: #B3B3B3;
+}
+
+.control-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+.control-btn-secondary {
+    -fx-background-color: transparent;
+    -fx-min-width: 35;
+    -fx-min-height: 35;
+    -fx-cursor: hand;
+}
+
+.control-btn-secondary .ikonli-font-icon {
+    -fx-icon-color: #727272;
+    -fx-fill: #727272;
+}
+
+.control-btn-secondary:hover .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+/* Botón de Play principal */
+.play-btn {
+    -fx-background-color: #1DB954;
+    -fx-background-radius: 50%;
+    -fx-min-width: 56;
+    -fx-min-height: 56;
+    -fx-cursor: hand;
+}
+
+.play-btn:hover {
+    -fx-background-color: #1ED760;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.play-btn .ikonli-font-icon {
+    -fx-icon-color: #000000;
+    -fx-fill: #000000;
+}
+
+/* ==================== CONTROL DE VOLUMEN ==================== */
+.volume-control {
+    -fx-padding: 0 0 0 20;
+}
+
+/* ==================== JFOENIX OVERRIDES ==================== */
+.jfx-list-view {
+    -fx-background-color: transparent;
+}
+
+.jfx-button {
+    -fx-background-color: transparent;
+}
+
+/* ==================== SCROLLBARS GLOBALES ==================== */
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.5);
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
+}
