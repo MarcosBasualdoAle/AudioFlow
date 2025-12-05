@@ -2,134 +2,196 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.geometry.Insets?>
 <?import com.jfoenix.controls.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <!--
-    Vista principal de AudioFlow
-    Compatible con Scene Builder - Puedes abrir este archivo en Scene Builder para editarlo visualmente.
-    
-    NOTA PARA SCENE BUILDER:
-    1. Abre Scene Builder
-    2. Ve a Library → JAR/FXML Manager → Add Library/FXML from file system
-    3. Agrega los JARs de JFoenix e Ikonli desde tu carpeta .m2/repository
+    AudioFlow - Vista Principal (Estilo Groove)
+    Diseño adaptado del mockup por Brickzon
 -->
 
-<StackPane fx:id="rootPane" 
-           xmlns="http://javafx.com/javafx/21" 
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.audioflow.controller.MainController"
-           styleClass="root-pane">
+<BorderPane fx:id="rootPane"
+            xmlns="http://javafx.com/javafx/21" 
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.audioflow.controller.MainController"
+            styleClass="main-container"
+            onDragOver="#handleDragOver"
+            onDragEntered="#handleDragEntered"
+            onDragExited="#handleDragExited"
+            onDragDropped="#handleDragDropped">
 
-    <BorderPane styleClass="main-container">
-        
-        <!-- ==================== BARRA LATERAL IZQUIERDA ==================== -->
-        <left>
-            <VBox styleClass="sidebar" spacing="10" prefWidth="280">
-                <padding><Insets top="20" right="15" bottom="20" left="15"/></padding>
-                
-                <!-- Logo / Título -->
-                <HBox alignment="CENTER_LEFT" spacing="10" styleClass="logo-container">
-                    <FontIcon iconLiteral="fas-music" iconSize="28" styleClass="logo-icon"/>
-                    <Label text="AudioFlow" styleClass="app-title"/>
-                </HBox>
-                
-                <Separator styleClass="sidebar-separator"/>
-                
-                <!-- Título de Playlist -->
-                <Label text="TU BIBLIOTECA" styleClass="section-title"/>
-                
-                <!-- Lista de Canciones -->
-                <JFXListView fx:id="songListView" 
-                             styleClass="song-list" 
-                             VBox.vgrow="ALWAYS"/>
-                
-                <!-- Hint de Drag & Drop (cuando está vacío) -->
-                <VBox fx:id="dropZone" styleClass="drop-zone" alignment="CENTER" spacing="10">
-                    <FontIcon iconLiteral="fas-cloud-upload-alt" iconSize="48" styleClass="drop-icon"/>
-                    <Label fx:id="dropHintLabel" text="Arrastra archivos MP3 aquí" styleClass="drop-hint"/>
-                    <Label text="o carpetas con música" styleClass="drop-hint-sub"/>
-                </VBox>
+    <!-- ==================== SIDEBAR IZQUIERDA ==================== -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="220" spacing="0">
+            
+            <!-- Logo -->
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="logo-section">
+                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                <FontIcon iconLiteral="fas-wave-square" iconSize="24" styleClass="logo-icon"/>
+                <Label text="AudioFlow" styleClass="logo-text"/>
+            </HBox>
+            
+            <!-- Menú Principal -->
+            <VBox styleClass="menu-section" spacing="0">
+                <Label text="MENÚ" styleClass="section-label"/>
+                <JFXButton fx:id="homeBtn" text="Inicio" styleClass="menu-btn menu-btn-active" 
+                           onAction="#handleHomeClick" alignment="CENTER_LEFT" maxWidth="Infinity">
+                    <graphic><FontIcon iconLiteral="fas-home" iconSize="16"/></graphic>
+                </JFXButton>
             </VBox>
-        </left>
-        
-        <!-- ==================== ÁREA CENTRAL ==================== -->
-        <center>
-            <VBox styleClass="center-area" alignment="CENTER">
-                <padding><Insets top="40" right="40" bottom="20" left="40"/></padding>
+            
+            <!-- Biblioteca -->
+            <VBox styleClass="menu-section" spacing="0">
+                <Label text="BIBLIOTECA" styleClass="section-label"/>
+                <JFXButton fx:id="allSongsBtn" text="Todas las Canciones" styleClass="menu-btn" 
+                           onAction="#handleAllSongsClick" alignment="CENTER_LEFT" maxWidth="Infinity">
+                    <graphic><FontIcon iconLiteral="fas-music" iconSize="16"/></graphic>
+                </JFXButton>
+            </VBox>
+            
+            <!-- Espacio flexible -->
+            <Region VBox.vgrow="ALWAYS"/>
+            
+        </VBox>
+    </left>
+
+    <!-- ==================== ÁREA CENTRAL ==================== -->
+    <center>
+        <VBox fx:id="mainContent" styleClass="main-content">
+            
+            <!-- Header de Playlist -->
+            <HBox styleClass="playlist-header" spacing="25" alignment="CENTER_LEFT">
+                <padding><Insets top="30" right="30" bottom="25" left="30"/></padding>
                 
-                <!-- Carátula del álbum (placeholder por ahora) -->
-                <StackPane styleClass="album-art-container" prefWidth="300" prefHeight="300">
-                    <VBox alignment="CENTER" spacing="10">
-                        <FontIcon iconLiteral="fas-compact-disc" iconSize="120" styleClass="album-placeholder-icon"/>
-                        <Label text="No hay canción seleccionada" styleClass="album-placeholder-text"/>
+                <!-- Imagen de Playlist -->
+                <StackPane fx:id="playlistCover" styleClass="playlist-cover" prefWidth="180" prefHeight="180">
+                    <VBox alignment="CENTER" spacing="5">
+                        <FontIcon iconLiteral="fas-compact-disc" iconSize="60" styleClass="cover-placeholder-icon"/>
                     </VBox>
                 </StackPane>
                 
-                <Region VBox.vgrow="ALWAYS"/>
-                
-                <!-- Información de la canción actual -->
-                <VBox fx:id="nowPlayingInfo" alignment="CENTER" spacing="5" styleClass="now-playing-info">
-                    <Label fx:id="songTitleLabel" text="Sin canción" styleClass="song-title"/>
-                    <Label fx:id="artistLabel" text="Arrastra archivos MP3 para comenzar" styleClass="artist-name"/>
-                </VBox>
-                
-            </VBox>
-        </center>
-        
-        <!-- ==================== BARRA INFERIOR - CONTROLES ==================== -->
-        <bottom>
-            <VBox styleClass="player-bar" spacing="10">
-                <padding><Insets top="15" right="30" bottom="15" left="30"/></padding>
-                
-                <!-- Barra de progreso -->
-                <HBox alignment="CENTER" spacing="10">
-                    <Label fx:id="currentTimeLabel" text="0:00" styleClass="time-label"/>
-                    <JFXSlider fx:id="progressSlider" min="0" max="100" value="0" 
-                               HBox.hgrow="ALWAYS" styleClass="progress-slider"/>
-                    <Label fx:id="totalTimeLabel" text="0:00" styleClass="time-label"/>
-                </HBox>
-                
-                <!-- Controles de reproducción -->
-                <HBox alignment="CENTER" spacing="20">
-                    
-                    <!-- Botón Shuffle -->
-                    <JFXButton fx:id="shuffleBtn" onAction="#handleShuffle" styleClass="control-btn-secondary">
-                        <graphic><FontIcon iconLiteral="fas-random" iconSize="18"/></graphic>
-                    </JFXButton>
-                    
-                    <!-- Botón Anterior -->
-                    <JFXButton fx:id="prevBtn" onAction="#handlePrevious" styleClass="control-btn">
-                        <graphic><FontIcon iconLiteral="fas-step-backward" iconSize="24"/></graphic>
-                    </JFXButton>
-                    
-                    <!-- Botón Play/Pause (principal) -->
-                    <JFXButton fx:id="playPauseBtn" onAction="#handlePlayPause" styleClass="play-btn">
-                        <graphic><FontIcon fx:id="playPauseIcon" iconLiteral="fas-play" iconSize="28"/></graphic>
-                    </JFXButton>
-                    
-                    <!-- Botón Siguiente -->
-                    <JFXButton fx:id="nextBtn" onAction="#handleNext" styleClass="control-btn">
-                        <graphic><FontIcon iconLiteral="fas-step-forward" iconSize="24"/></graphic>
-                    </JFXButton>
-                    
-                    <!-- Espacio flexible -->
-                    <Region HBox.hgrow="ALWAYS"/>
-                    
-                    <!-- Control de Volumen -->
-                    <HBox alignment="CENTER" spacing="10" styleClass="volume-control">
-                        <JFXButton onAction="#handleMute" styleClass="control-btn-secondary">
-                            <graphic><FontIcon fx:id="volumeIcon" iconLiteral="fas-volume-up" iconSize="18"/></graphic>
-                        </JFXButton>
-                        <JFXSlider fx:id="volumeSlider" min="0" max="100" value="70" 
-                                   prefWidth="100" styleClass="volume-slider"/>
+                <!-- Info de Playlist -->
+                <VBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="MI BIBLIOTECA" styleClass="playlist-type"/>
+                    <Label fx:id="playlistTitle" text="Canciones" styleClass="playlist-title"/>
+                    <Label fx:id="playlistDescription" text="Arrastra archivos de música para comenzar" styleClass="playlist-description"/>
+                    <HBox spacing="5" alignment="CENTER_LEFT" styleClass="playlist-stats">
+                        <FontIcon iconLiteral="fas-music" iconSize="12" styleClass="stats-icon"/>
+                        <Label fx:id="songCountLabel" text="0 canciones" styleClass="stats-text"/>
+                        <Label text="•" styleClass="stats-separator"/>
+                        <Label fx:id="totalDurationLabel" text="0 min" styleClass="stats-text"/>
                     </HBox>
-                    
+                </VBox>
+            </HBox>
+            
+            <!-- Barra de Acciones -->
+            <HBox styleClass="actions-bar" spacing="15" alignment="CENTER_LEFT">
+                <padding><Insets top="0" right="30" bottom="20" left="30"/></padding>
+                
+                <!-- Botón Play Grande -->
+                <JFXButton fx:id="playAllBtn" onAction="#handlePlayPause" styleClass="play-all-btn">
+                    <graphic><FontIcon fx:id="playAllIcon" iconLiteral="fas-play" iconSize="22"/></graphic>
+                </JFXButton>
+                
+                <!-- Botón Shuffle -->
+                <JFXButton fx:id="shuffleBtn" onAction="#handleShuffle" styleClass="action-btn">
+                    <graphic><FontIcon iconLiteral="fas-random" iconSize="18"/></graphic>
+                </JFXButton>
+                
+                <!-- Campo de Búsqueda -->
+                <Region HBox.hgrow="ALWAYS"/>
+                <StackPane styleClass="search-container">
+                    <TextField fx:id="searchField" promptText="Buscar en biblioteca..." 
+                               styleClass="search-field" onKeyReleased="#handleSearch" prefWidth="220"/>
+                    <FontIcon iconLiteral="fas-search" iconSize="14" styleClass="search-icon"
+                              StackPane.alignment="CENTER_LEFT" translateX="12"/>
+                </StackPane>
+            </HBox>
+            
+            <!-- Encabezado de Tabla -->
+            <HBox styleClass="table-header" spacing="0" alignment="CENTER_LEFT">
+                <padding><Insets top="10" right="30" bottom="10" left="30"/></padding>
+                <Label text="#" styleClass="col-index" prefWidth="50"/>
+                <Label text="TÍTULO" styleClass="col-title" HBox.hgrow="ALWAYS"/>
+                <Label text="ÁLBUM" styleClass="col-album" prefWidth="200"/>
+                <FontIcon iconLiteral="far-clock" iconSize="14" styleClass="col-duration-icon"/>
+            </HBox>
+            
+            <Separator styleClass="table-separator"/>
+            
+            <!-- Lista de Canciones -->
+            <JFXListView fx:id="songListView" styleClass="song-table" VBox.vgrow="ALWAYS"/>
+            
+        </VBox>
+    </center>
+
+    <!-- ==================== PLAYER BAR INFERIOR ==================== -->
+    <bottom>
+        <VBox styleClass="player-bar" spacing="0">
+            
+            <!-- Progress Bar -->
+            <HBox alignment="CENTER" spacing="10" styleClass="progress-section">
+                <padding><Insets top="8" right="20" bottom="0" left="20"/></padding>
+                <Label fx:id="currentTimeLabel" text="0:00" styleClass="time-label"/>
+                <JFXSlider fx:id="progressSlider" min="0" max="100" value="0" 
+                           HBox.hgrow="ALWAYS" styleClass="progress-slider"/>
+                <Label fx:id="totalTimeLabel" text="0:00" styleClass="time-label"/>
+            </HBox>
+            
+            <!-- Controles y Info -->
+            <HBox alignment="CENTER" styleClass="controls-section">
+                <padding><Insets top="8" right="20" bottom="12" left="20"/></padding>
+                
+                <!-- Info Canción Actual (izquierda) -->
+                <HBox fx:id="nowPlayingInfo" spacing="12" alignment="CENTER_LEFT" prefWidth="280">
+                    <StackPane fx:id="nowPlayingCoverContainer" styleClass="now-playing-cover" prefWidth="50" prefHeight="50">
+                        <ImageView fx:id="nowPlayingAlbumArt" fitWidth="50" fitHeight="50" preserveRatio="true" styleClass="np-album-art"/>
+                        <FontIcon fx:id="nowPlayingPlaceholder" iconLiteral="fas-compact-disc" iconSize="24" styleClass="np-cover-icon"/>
+                    </StackPane>
+                    <VBox spacing="2" alignment="CENTER_LEFT">
+                        <Label fx:id="songTitleLabel" text="Sin canción" styleClass="np-title"/>
+                        <Label fx:id="artistLabel" text="Selecciona algo" styleClass="np-artist"/>
+                    </VBox>
                 </HBox>
-            </VBox>
-        </bottom>
-        
-    </BorderPane>
-    
-</StackPane>
+                
+                <!-- Controles Centrales -->
+                <HBox spacing="20" alignment="CENTER" HBox.hgrow="ALWAYS">
+                    <JFXButton fx:id="shuffleBtnBar" onAction="#handleShuffle" styleClass="control-btn-small">
+                        <graphic><FontIcon iconLiteral="fas-random" iconSize="14"/></graphic>
+                    </JFXButton>
+                    <JFXButton fx:id="prevBtn" onAction="#handlePrevious" styleClass="control-btn">
+                        <graphic><FontIcon iconLiteral="fas-step-backward" iconSize="18"/></graphic>
+                    </JFXButton>
+                    <JFXButton fx:id="playPauseBtn" onAction="#handlePlayPause" styleClass="play-btn-main">
+                        <graphic><FontIcon fx:id="playPauseIcon" iconLiteral="fas-play" iconSize="20"/></graphic>
+                    </JFXButton>
+                    <JFXButton fx:id="nextBtn" onAction="#handleNext" styleClass="control-btn">
+                        <graphic><FontIcon iconLiteral="fas-step-forward" iconSize="18"/></graphic>
+                    </JFXButton>
+                    <JFXButton fx:id="repeatBtn" styleClass="control-btn-small">
+                        <graphic><FontIcon iconLiteral="fas-redo" iconSize="14"/></graphic>
+                    </JFXButton>
+                </HBox>
+                
+                <!-- Volumen (derecha) -->
+                <HBox fx:id="volumeContainer" spacing="8" alignment="CENTER_RIGHT" prefWidth="250"
+                      onMouseEntered="#handleVolumeHoverEnter" onMouseExited="#handleVolumeHoverExit">
+                    <JFXButton onAction="#handleMute" styleClass="control-btn-small">
+                        <graphic><FontIcon fx:id="volumeIcon" iconLiteral="fas-volume-up" iconSize="14"/></graphic>
+                    </JFXButton>
+                    <JFXSlider fx:id="volumeSlider" min="0" max="100" value="70" 
+                               prefWidth="100" styleClass="volume-slider"/>
+                    
+                    <!-- Botón Minimizar -->
+                    <JFXButton fx:id="minimizeBtn" onAction="#handleMinimizeToMiniPlayer" styleClass="control-btn-small">
+                        <graphic><FontIcon iconLiteral="fas-compress-alt" iconSize="14"/></graphic>
+                    </JFXButton>
+                </HBox>
+                
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

@@ -1,87 +1,25 @@
 package com.audioflow.util;
 
 import com.audioflow.model.Song;
-import javafx.scene.Node;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.Mp3File;
+import javafx.scene.image.Image;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Utilidad para manejar Drag & Drop de archivos de audio.
- * Permite arrastrar archivos MP3/WAV desde el explorador de Windows.
+ * Extrae metadatos ID3 (título, artista, álbum, carátula) de archivos MP3.
+ * 
+ * @author Brickzon
  */
 public class DragDropHandler {
 
     // Extensiones de audio soportadas
     private static final String[] SUPPORTED_EXTENSIONS = { ".mp3", ".wav", ".m4a", ".aac", ".flac" };
-
-    /**
-     * Configura un nodo para aceptar drag & drop de archivos de audio
-     * 
-     * @param target         Nodo que recibirá los archivos
-     * @param onFilesDropped Callback que se ejecuta con la lista de canciones
-     *                       creadas
-     */
-    public static void setupDropZone(Node target, Consumer<List<Song>> onFilesDropped) {
-
-        // Cuando algo entra al área
-        target.setOnDragOver(event -> {
-            if (event.getGestureSource() != target && hasAudioFiles(event.getDragboard())) {
-                event.acceptTransferModes(TransferMode.COPY);
-            }
-            event.consume();
-        });
-
-        // Cuando el drag entra al área (para efectos visuales)
-        target.setOnDragEntered(event -> {
-            if (hasAudioFiles(event.getDragboard())) {
-                target.setStyle("-fx-border-color: #1DB954; -fx-border-width: 3; -fx-border-style: dashed;");
-            }
-            event.consume();
-        });
-
-        // Cuando el drag sale del área
-        target.setOnDragExited(event -> {
-            target.setStyle("");
-            event.consume();
-        });
-
-        // Cuando se sueltan los archivos
-        target.setOnDragDropped(event -> {
-            Dragboard db = event.getDragboard();
-            boolean success = false;
-
-            if (db.hasFiles()) {
-                List<Song> songs = processDroppedFiles(db.getFiles());
-                if (!songs.isEmpty()) {
-                    onFilesDropped.accept(songs);
-                    success = true;
-                }
-            }
-
-            event.setDropCompleted(success);
-            event.consume();
-        });
-    }
-
-    /**
-     * Verifica si el dragboard contiene archivos de audio
-     */
-    private static boolean hasAudioFiles(Dragboard db) {
-        if (db.hasFiles()) {
-            for (File file : db.getFiles()) {
-                if (isAudioFile(file)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     /**
      * Verifica si un archivo es de audio soportado
@@ -99,30 +37,97 @@ public class DragDropHandler {
     }
 
     /**
-     * Procesa los archivos soltados y crea objetos Song
+     * Crea un objeto Song desde un archivo, extrayendo metadatos ID3
      */
-    private static List<Song> processDroppedFiles(List<File> files) {
-        List<Song> songs = new ArrayList<>();
+    public static Song createSongFromFile(File file) {
+        String filePath = file.getAbsolutePath();
+        String title = extractTitleFromFilename(file.getName());
+        String artist = "Artista Desconocido";
+        String album = "Álbum Desconocido";
+        Image albumArt = null;
 
+        // Intentar extraer metadatos ID3 si es MP3
+        if (file.getName().toLowerCase().endsWith(".mp3")) {
+            try {
+                Mp3File mp3File = new Mp3File(file);
+
+                if (mp3File.hasId3v2Tag()) {
+                    ID3v2 id3v2Tag = mp3File.getId3v2Tag();
+
+                    // Título
+                    if (id3v2Tag.getTitle() != null && !id3v2Tag.getTitle().isBlank()) {
+                        title = id3v2Tag.getTitle();
+                    }
+
+                    // Artista
+                    if (id3v2Tag.getArtist() != null && !id3v2Tag.getArtist().isBlank()) {
+                        artist = id3v2Tag.getArtist();
+                    }
+
+                    // Álbum
+                    if (id3v2Tag.getAlbum() != null && !id3v2Tag.getAlbum().isBlank()) {
+                        album = id3v2Tag.getAlbum();
+                    }
+
+                    // Carátula (Album Art)
+                    byte[] imageData = id3v2Tag.getAlbumImage();
+                    if (imageData != null && imageData.length > 0) {
+                        try {
+                            albumArt = new Image(new ByteArrayInputStream(imageData));
+                            System.out.println("  ✓ Carátula extraída");
+                        } catch (Exception imgEx) {
+                            System.out.println("  ⚠ No se pudo cargar la carátula");
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("  ⚠ No se pudieron leer metadatos ID3: " + e.getMessage());
+            }
+        }
+
+        Song song = new Song(title, artist, album, null, filePath, albumArt);
+        System.out.println("✓ Agregado: " + title + " - " + artist);
+        return song;
+    }
+
+    /**
+     * Extrae un título limpio del nombre del archivo
+     */
+    private static String extractTitleFromFilename(String filename) {
+        // Quitar extensión
+        int dotIndex = filename.lastIndexOf('.');
+        String name = dotIndex > 0 ? filename.substring(0, dotIndex) : filename;
+
+        // Limpiar caracteres comunes en nombres de archivo
+        name = name.replace("_", " ").replace("-", " - ");
+
+        // Quitar números de pista al inicio (ej: "01 - ", "01. ", "1 - ")
+        name = name.replaceFirst("^\\d{1,2}[.\\-\\s]+", "");
+
+        return name.trim();
+    }
+
+    /**
+     * Procesa una lista de archivos/directorios
+     */
+    public static List<Song> processFiles(List<File> files) {
+        List<Song> songs = new ArrayList<>();
         for (File file : files) {
             if (file.isDirectory()) {
-                // Si es un directorio, buscar archivos de audio dentro
                 songs.addAll(scanDirectory(file));
             } else if (isAudioFile(file)) {
                 songs.add(createSongFromFile(file));
             }
         }
-
         return songs;
     }
 
     /**
-     * Escanea un directorio en busca de archivos de audio
+     * Escanea un directorio recursivamente
      */
     private static List<Song> scanDirectory(File directory) {
         List<Song> songs = new ArrayList<>();
         File[] files = directory.listFiles();
-
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
@@ -132,25 +137,11 @@ public class DragDropHandler {
                 }
             }
         }
-
         return songs;
     }
 
     /**
-     * Crea un objeto Song desde un archivo
-     */
-    public static Song createSongFromFile(File file) {
-        Song song = new Song(file.getAbsolutePath());
-
-        // El título se extrae del nombre del archivo en el constructor
-        // Aquí podríamos agregar extracción de metadatos ID3 en el futuro
-
-        System.out.println("✓ Archivo agregado: " + song.getTitle());
-        return song;
-    }
-
-    /**
-     * Obtiene las extensiones soportadas como texto
+     * Obtiene las extensiones soportadas
      */
     public static String getSupportedExtensionsText() {
         return String.join(", ", SUPPORTED_EXTENSIONS);

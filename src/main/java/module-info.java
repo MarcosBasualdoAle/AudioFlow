@@ -9,6 +9,7 @@ module com.audioflow {
     requires com.jfoenix;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.fontawesome5;
+    requires mp3agic;
 
     // Abrir paquetes a JavaFX para reflexión (necesario para FXML)
     opens com.audioflow to javafx.fxml;

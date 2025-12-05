@@ -1,189 +1,530 @@
 /*
- * AudioFlow - Estilos CSS Modernos
- * Tema: Oscuro con acentos verdes (estilo Spotify)
+ * AudioFlow - Estilos CSS (Tema Groove/Spotify)
+ * Diseño oscuro moderno con acentos azules
+ * @author Brickzon
  */
 
-/* ==================== ROOT Y CONTENEDORES ==================== */
-.root-pane {
+/* ==================== VARIABLES DE COLORES ==================== */
+/* 
+ * Colores principales:
+ * - Fondo principal: #121212
+ * - Sidebar: #000000
+ * - Acento: #3B82F6 (azul)
+ * - Texto primario: #FFFFFF
+ * - Texto secundario: #A1A1A1
+ */
+
+/* ==================== CONTENEDOR PRINCIPAL ==================== */
+.main-container {
     -fx-background-color: #121212;
 }
 
-.main-container {
-    -fx-background-color: transparent;
-}
-
-/* ==================== BARRA LATERAL ==================== */
+/* ==================== SIDEBAR ==================== */
 .sidebar {
     -fx-background-color: #000000;
-    -fx-background-radius: 0;
 }
 
-.logo-container {
-    -fx-padding: 10 0 10 0;
+.logo-section {
+    -fx-padding: 20;
 }
 
 .logo-icon {
-    -fx-icon-color: #1DB954;
-    -fx-fill: #1DB954;
+    -fx-icon-color: #3B82F6;
+    -fx-fill: #3B82F6;
 }
 
-.app-title {
-    -fx-font-size: 24px;
+.logo-text {
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: #FFFFFF;
-    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
 }
 
-.sidebar-separator {
-    -fx-background-color: #404040;
+/* Secciones del Menú */
+.menu-section {
+    -fx-padding: 15 0 10 0;
 }
 
-.section-title {
+.section-label {
     -fx-font-size: 11px;
     -fx-font-weight: bold;
-    -fx-text-fill: #727272;
-    -fx-padding: 15 0 5 0;
+    -fx-text-fill: #6B7280;
+    -fx-padding: 0 20 8 20;
 }
 
-/* ==================== LISTA DE CANCIONES ==================== */
-.song-list {
+/* Botones del Menú */
+.menu-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #A1A1A1;
+    -fx-font-size: 14px;
+    -fx-padding: 12 20 12 20;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+}
+
+.menu-btn .ikonli-font-icon {
+    -fx-icon-color: #A1A1A1;
+    -fx-fill: #A1A1A1;
+}
+
+.menu-btn:hover {
+    -fx-background-color: #1A1A1A;
+    -fx-text-fill: #FFFFFF;
+}
+
+.menu-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+.menu-btn-active {
+    -fx-background-color: #1E3A5F;
+    -fx-text-fill: #3B82F6;
+}
+
+.menu-btn-active .ikonli-font-icon {
+    -fx-icon-color: #3B82F6;
+    -fx-fill: #3B82F6;
+}
+
+/* Zona Drop en Sidebar */
+.drop-zone-sidebar {
+    -fx-background-color: #1A1A1A;
+    -fx-background-radius: 8;
+    -fx-border-color: #333333;
+    -fx-border-radius: 8;
+    -fx-border-style: dashed;
+    -fx-border-width: 2;
+    -fx-margin: 15;
+}
+
+.drop-zone-sidebar .drop-icon {
+    -fx-icon-color: #6B7280;
+    -fx-fill: #6B7280;
+}
+
+.drop-zone-sidebar .drop-hint {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6B7280;
+}
+
+/* Drop Zone Activa */
+.drop-zone-active {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+    -fx-border-color: #3B82F6;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.4), 15, 0.5, 0, 0);
+}
+
+.drop-zone-active .drop-icon {
+    -fx-icon-color: #3B82F6;
+    -fx-fill: #3B82F6;
+}
+
+.drop-zone-active .drop-hint {
+    -fx-text-fill: #3B82F6;
+}
+
+/* Efecto Glow en Área Central durante Drag */
+.main-content-drag-active {
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.5), 25, 0.3, 0, 0);
+}
+
+/* ==================== ÁREA CENTRAL ==================== */
+.main-content {
+    -fx-background-color: linear-gradient(to bottom, #1E1E1E 0%, #121212 30%);
+}
+
+/* Header de Playlist */
+.playlist-header {
+    -fx-background-color: transparent;
+}
+
+.playlist-cover {
+    -fx-background-color: #282828;
+    -fx-background-radius: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 15, 0, 0, 8);
+}
+
+.cover-placeholder-icon {
+    -fx-icon-color: #4B5563;
+    -fx-fill: #4B5563;
+}
+
+.playlist-type {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3B82F6;
+}
+
+.playlist-title {
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.playlist-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: #A1A1A1;
+    -fx-wrap-text: true;
+}
+
+.playlist-stats {
+    -fx-padding: 5 0 0 0;
+}
+
+.stats-icon {
+    -fx-icon-color: #A1A1A1;
+    -fx-fill: #A1A1A1;
+}
+
+.stats-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #A1A1A1;
+}
+
+.stats-separator {
+    -fx-text-fill: #6B7280;
+}
+
+/* Barra de Acciones */
+.actions-bar {
+    -fx-background-color: transparent;
+}
+
+.play-all-btn {
+    -fx-background-color: #3B82F6;
+    -fx-background-radius: 50%;
+    -fx-min-width: 56;
+    -fx-min-height: 56;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.4), 10, 0, 0, 3);
+}
+
+.play-all-btn:hover {
+    -fx-background-color: #60A5FA;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.play-all-btn .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+.action-btn {
+    -fx-background-color: transparent;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-cursor: hand;
+}
+
+.action-btn .ikonli-font-icon {
+    -fx-icon-color: #A1A1A1;
+    -fx-fill: #A1A1A1;
+}
+
+.action-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+/* Campo de Búsqueda */
+.search-container {
+    -fx-padding: 0;
+}
+
+.search-field {
+    -fx-background-color: #282828;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #6B7280;
+    -fx-background-radius: 20;
+    -fx-padding: 10 15 10 35;
+    -fx-font-size: 13px;
+    -fx-border-color: transparent;
+    -fx-border-radius: 20;
+}
+
+.search-field:focused {
+    -fx-background-color: #333333;
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 1;
+}
+
+.search-icon {
+    -fx-icon-color: #6B7280;
+    -fx-fill: #6B7280;
+}
+
+/* Encabezado de Tabla */
+.table-header {
+    -fx-background-color: transparent;
+}
+
+.table-header .label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6B7280;
+}
+
+.col-index {
+    -fx-alignment: center;
+}
+
+.col-duration-icon {
+    -fx-icon-color: #6B7280;
+    -fx-fill: #6B7280;
+    -fx-padding: 0 30 0 0;
+}
+
+.table-separator {
+    -fx-background-color: #282828;
+}
+
+/* Lista de Canciones (Estilo Tabla) */
+.song-table {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
 
-.song-list .list-cell {
+.song-table .list-cell {
     -fx-background-color: transparent;
-    -fx-text-fill: #B3B3B3;
-    -fx-font-size: 14px;
-    -fx-padding: 12 10 12 10;
+    -fx-padding: 8 30 8 30;
     -fx-background-radius: 4;
 }
 
-.song-list .list-cell:hover {
-    -fx-background-color: #333333;
+.song-table .list-cell:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
 }
 
-.song-list .list-cell:selected {
-    -fx-background-color: #282828;
-    -fx-text-fill: #FFFFFF;
-}
-
-.song-list .list-cell:selected:hover {
-    -fx-background-color: #333333;
+.song-table .list-cell:selected {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
 }
 
 /* Scrollbar */
-.song-list .scroll-bar:vertical {
+.song-table .scroll-bar:vertical {
     -fx-background-color: transparent;
     -fx-pref-width: 8;
 }
 
-.song-list .scroll-bar:vertical .thumb {
-    -fx-background-color: #727272;
+.song-table .scroll-bar:vertical .thumb {
+    -fx-background-color: #4B5563;
     -fx-background-radius: 4;
 }
 
-.song-list .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #B3B3B3;
+.song-table .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #6B7280;
 }
 
-/* ==================== ZONA DE DROP ==================== */
-.drop-zone {
-    -fx-background-color: rgba(40, 40, 40, 0.5);
-    -fx-background-radius: 8;
-    -fx-border-color: #404040;
-    -fx-border-radius: 8;
-    -fx-border-style: dashed;
-    -fx-border-width: 2;
-    -fx-padding: 30;
-    -fx-min-height: 150;
+/* Celdas de Canciones */
+.song-cell-container {
+    -fx-spacing: 0;
 }
 
-.drop-zone:hover {
-    -fx-background-color: rgba(29, 185, 84, 0.1);
-    -fx-border-color: #1DB954;
-}
-
-.drop-icon {
-    -fx-icon-color: #727272;
-    -fx-fill: #727272;
-}
-
-.drop-hint {
+.song-cell-index {
     -fx-font-size: 14px;
-    -fx-text-fill: #B3B3B3;
+    -fx-text-fill: #6B7280;
+    -fx-min-width: 50;
+    -fx-alignment: center;
 }
 
-.drop-hint-sub {
-    -fx-font-size: 12px;
-    -fx-text-fill: #727272;
-}
-
-/* ==================== ÁREA CENTRAL ==================== */
-.center-area {
-    -fx-background-color: linear-gradient(to bottom, #1a1a1a 0%, #121212 100%);
-}
-
-.album-art-container {
-    -fx-background-color: #282828;
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 5);
-}
-
-.album-placeholder-icon {
-    -fx-icon-color: #727272;
-    -fx-fill: #727272;
-}
-
-.album-placeholder-text {
+.song-cell-title {
     -fx-font-size: 14px;
-    -fx-text-fill: #727272;
-}
-
-/* ==================== INFO DE CANCIÓN ACTUAL ==================== */
-.now-playing-info {
-    -fx-padding: 20 0 10 0;
-}
-
-.song-title {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
     -fx-text-fill: #FFFFFF;
 }
 
-.artist-name {
-    -fx-font-size: 16px;
-    -fx-text-fill: #B3B3B3;
+.song-cell-artist {
+    -fx-font-size: 12px;
+    -fx-text-fill: #A1A1A1;
 }
 
-/* ==================== BARRA DEL REPRODUCTOR ==================== */
+.song-cell-album {
+    -fx-font-size: 13px;
+    -fx-text-fill: #A1A1A1;
+    -fx-min-width: 200;
+}
+
+.song-cell-duration {
+    -fx-font-size: 13px;
+    -fx-text-fill: #A1A1A1;
+    -fx-min-width: 50;
+    -fx-alignment: center-right;
+}
+
+.song-cell-playing .song-cell-title {
+    -fx-text-fill: #3B82F6;
+}
+
+.play-hover-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+/* ==================== PLAYER BAR ==================== */
 .player-bar {
     -fx-background-color: #181818;
-    -fx-border-color: #404040;
+    -fx-border-color: #282828;
     -fx-border-width: 1 0 0 0;
+}
+
+.progress-section {
+    -fx-padding: 8 20 0 20;
+}
+
+.controls-section {
+    -fx-padding: 8 20 12 20;
 }
 
 .time-label {
     -fx-font-size: 11px;
-    -fx-text-fill: #727272;
+    -fx-text-fill: #6B7280;
     -fx-min-width: 40;
 }
 
-/* ==================== SLIDERS ==================== */
-.progress-slider,
-.volume-slider {
+/* Slider de Progreso */
+.progress-slider {
     -fx-background-color: transparent;
 }
 
-.progress-slider .track,
-.volume-slider .track {
-    -fx-background-color: #404040;
+.progress-slider .track {
+    -fx-background-color: #4B5563;
     -fx-background-radius: 2;
     -fx-pref-height: 4;
 }
 
-.progress-slider .thumb,
+.progress-slider .thumb {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 12;
+    -fx-pref-height: 12;
+    -fx-cursor: hand;
+    -fx-opacity: 0;
+}
+
+.progress-slider:hover .thumb {
+    -fx-opacity: 1;
+}
+
+.progress-slider .thumb:hover {
+    -fx-background-color: #3B82F6;
+}
+
+/* Now Playing Info */
+.now-playing-cover {
+    -fx-background-color: #282828;
+    -fx-background-radius: 25;
+}
+
+.np-album-art {
+    -fx-effect: null;
+}
+
+.np-album-art-spinning {
+    /* La animación se controla desde Java */
+}
+
+.np-cover-icon {
+    -fx-icon-color: #4B5563;
+    -fx-fill: #4B5563;
+}
+
+/* Album Art en Lista de Canciones */
+.song-album-art {
+    -fx-background-radius: 4;
+}
+
+.song-album-art-container {
+    -fx-background-color: #282828;
+    -fx-background-radius: 4;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+}
+
+.song-art-placeholder {
+    -fx-icon-color: #4B5563;
+    -fx-fill: #4B5563;
+}
+
+.np-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.np-artist {
+    -fx-font-size: 12px;
+    -fx-text-fill: #A1A1A1;
+}
+
+/* Controles de Reproducción */
+.control-btn {
+    -fx-background-color: transparent;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-cursor: hand;
+}
+
+.control-btn .ikonli-font-icon {
+    -fx-icon-color: #A1A1A1;
+    -fx-fill: #A1A1A1;
+}
+
+.control-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+.control-btn-small {
+    -fx-background-color: transparent;
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+    -fx-cursor: hand;
+}
+
+.control-btn-small .ikonli-font-icon {
+    -fx-icon-color: #6B7280;
+    -fx-fill: #6B7280;
+}
+
+.control-btn-small:hover .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+/* Botón Play Principal */
+.play-btn-main {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 50%;
+    -fx-min-width: 42;
+    -fx-min-height: 42;
+    -fx-cursor: hand;
+}
+
+.play-btn-main:hover {
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+.play-btn-main .ikonli-font-icon {
+    -fx-icon-color: #000000;
+    -fx-fill: #000000;
+}
+
+/* Slider de Volumen */
+.volume-slider {
+    -fx-background-color: transparent;
+}
+
+.volume-slider .track {
+    -fx-background-color: #4B5563;
+    -fx-background-radius: 2;
+    -fx-pref-height: 4;
+}
+
 .volume-slider .thumb {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 50%;
@@ -192,73 +533,11 @@
     -fx-cursor: hand;
 }
 
-.progress-slider .thumb:hover,
 .volume-slider .thumb:hover {
-    -fx-background-color: #1DB954;
+    -fx-background-color: #3B82F6;
 }
 
-/* ==================== BOTONES DE CONTROL ==================== */
-.control-btn {
-    -fx-background-color: transparent;
-    -fx-background-radius: 50%;
-    -fx-min-width: 45;
-    -fx-min-height: 45;
-    -fx-cursor: hand;
-}
-
-.control-btn .ikonli-font-icon {
-    -fx-icon-color: #B3B3B3;
-    -fx-fill: #B3B3B3;
-}
-
-.control-btn:hover .ikonli-font-icon {
-    -fx-icon-color: #FFFFFF;
-    -fx-fill: #FFFFFF;
-}
-
-.control-btn-secondary {
-    -fx-background-color: transparent;
-    -fx-min-width: 35;
-    -fx-min-height: 35;
-    -fx-cursor: hand;
-}
-
-.control-btn-secondary .ikonli-font-icon {
-    -fx-icon-color: #727272;
-    -fx-fill: #727272;
-}
-
-.control-btn-secondary:hover .ikonli-font-icon {
-    -fx-icon-color: #FFFFFF;
-    -fx-fill: #FFFFFF;
-}
-
-/* Botón de Play principal */
-.play-btn {
-    -fx-background-color: #1DB954;
-    -fx-background-radius: 50%;
-    -fx-min-width: 56;
-    -fx-min-height: 56;
-    -fx-cursor: hand;
-}
-
-.play-btn:hover {
-    -fx-background-color: #1ED760;
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-}
-
-.play-btn .ikonli-font-icon {
-    -fx-icon-color: #000000;
-    -fx-fill: #000000;
-}
-
-/* ==================== CONTROL DE VOLUMEN ==================== */
-.volume-control {
-    -fx-padding: 0 0 0 20;
-}
-
-/* ==================== JFOENIX OVERRIDES ==================== */
+/* ==================== OVERRIDES JFOENIX ==================== */
 .jfx-list-view {
     -fx-background-color: transparent;
 }
@@ -273,12 +552,12 @@
 }
 
 .scroll-bar .thumb {
-    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-background-color: rgba(255, 255, 255, 0.2);
     -fx-background-radius: 4;
 }
 
 .scroll-bar .thumb:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.5);
+    -fx-background-color: rgba(255, 255, 255, 0.35);
 }
 
 .scroll-bar .increment-button,

@@ -32,6 +32,14 @@ public class Song {
     }
 
     /**
+     * Constructor con carátula de álbum
+     */
+    public Song(String title, String artist, String album, Duration duration, String filePath, Image albumArt) {
+        this(title, artist, album, duration, filePath);
+        this.albumArt.set(albumArt);
+    }
+
+    /**
      * Constructor simplificado (útil para drag & drop)
      */
     public Song(String filePath) {
