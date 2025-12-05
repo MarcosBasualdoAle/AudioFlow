@@ -617,8 +617,14 @@
     -fx-font-size: 14px;
 }
 
-/* Estilo para drag-over en celdas de reordenamiento */
+/* Estilo para la canción que está siendo arrastrada */
+.song-cell-dragging {
+    -fx-background-color: rgba(59, 130, 246, 0.3);
+    -fx-opacity: 0.7;
+}
+
+/* Estilo para indicar donde se soltará la canción (gap effect) */
 .song-cell-drag-over {
-    -fx-border-color: #3B82F6;
-    -fx-border-width: 2 0 0 0;
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+    -fx-padding: 15 0 15 0;
 }

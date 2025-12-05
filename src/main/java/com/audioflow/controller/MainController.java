@@ -261,9 +261,22 @@ public class MainController implements Initializable {
                 container.setSpacing(12);
                 container.getStyleClass().add("song-cell-container");
 
-                // Drag-to-reorder: iniciar drag
+                // Doble clic para reproducir canción
+                container.setOnMouseClicked(event -> {
+                    if (event.getClickCount() == 2 && getItem() != null) {
+                        int index = playlist.getSongs().indexOf(getItem());
+                        playlist.goToIndex(index);
+                        loadAndPlayCurrentSong();
+                        event.consume();
+                    }
+                });
+
+                // Drag-to-reorder: iniciar drag (solo con clic sostenido)
                 container.setOnDragDetected(event -> {
                     if (getItem() != null) {
+                        // Marcar la celda como siendo arrastrada
+                        container.getStyleClass().add("song-cell-dragging");
+
                         javafx.scene.input.Dragboard db = startDragAndDrop(javafx.scene.input.TransferMode.MOVE);
                         javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
                         content.putString(String.valueOf(getIndex()));
@@ -272,42 +285,60 @@ public class MainController implements Initializable {
                     }
                 });
 
-                // Drag-to-reorder: drag over
+                // Drag-to-reorder: drag over (solo para reordenamiento interno, no archivos
+                // externos)
                 setOnDragOver(event -> {
-                    if (event.getGestureSource() != this && event.getDragboard().hasString()) {
+                    // Solo procesar si es un drag interno de reordenamiento (tiene String, no
+                    // Files)
+                    if (event.getGestureSource() != this && event.getDragboard().hasString()
+                            && !event.getDragboard().hasFiles()) {
                         event.acceptTransferModes(javafx.scene.input.TransferMode.MOVE);
                         container.getStyleClass().add("song-cell-drag-over");
+                        event.consume();
                     }
-                    event.consume();
+                    // Si tiene archivos, NO consumir para que suba al handler global
                 });
 
                 // Drag-to-reorder: salir del área
                 setOnDragExited(event -> {
                     container.getStyleClass().remove("song-cell-drag-over");
-                    event.consume();
+                    // Solo consumir si es reordenamiento interno
+                    if (event.getDragboard().hasString() && !event.getDragboard().hasFiles()) {
+                        event.consume();
+                    }
                 });
 
-                // Drag-to-reorder: soltar
+                // Drag-to-reorder: soltar (solo para reordenamiento interno)
                 setOnDragDropped(event -> {
                     javafx.scene.input.Dragboard db = event.getDragboard();
                     boolean success = false;
-                    if (db.hasString()) {
-                        int draggedIdx = Integer.parseInt(db.getString());
-                        int targetIdx = getIndex();
-                        if (draggedIdx != targetIdx && targetIdx >= 0 && targetIdx < playlist.getSongs().size()) {
-                            Song draggedSong = playlist.getSongs().get(draggedIdx);
-                            playlist.getSongs().remove(draggedIdx);
-                            playlist.getSongs().add(targetIdx, draggedSong);
-                            success = true;
+                    // Solo procesar si es reordenamiento interno (String sin Files)
+                    if (db.hasString() && !db.hasFiles()) {
+                        try {
+                            int draggedIdx = Integer.parseInt(db.getString());
+                            int targetIdx = getIndex();
+                            if (draggedIdx != targetIdx && targetIdx >= 0 && targetIdx < playlist.getSongs().size()) {
+                                Song draggedSong = playlist.getSongs().get(draggedIdx);
+                                playlist.getSongs().remove(draggedIdx);
+                                playlist.getSongs().add(targetIdx, draggedSong);
+                                success = true;
+                            }
+                        } catch (NumberFormatException e) {
+                            // No es un índice válido, ignorar
                         }
+                        event.setDropCompleted(success);
+                        container.getStyleClass().remove("song-cell-drag-over");
+                        clearAllDragOverStyles();
+                        event.consume();
                     }
-                    event.setDropCompleted(success);
-                    container.getStyleClass().remove("song-cell-drag-over");
-                    event.consume();
+                    // Si tiene archivos, NO consumir para que suba al handler global
                 });
 
                 setOnDragDone(event -> {
+                    // Limpiar estilos de arrastre
+                    container.getStyleClass().remove("song-cell-dragging");
                     container.getStyleClass().remove("song-cell-drag-over");
+                    clearAllDragOverStyles();
                     event.consume();
                 });
             }
@@ -353,6 +384,18 @@ public class MainController implements Initializable {
                 }
             }
         });
+    }
+
+    private void clearAllDragOverStyles() {
+        // Limpiar estilos de todas las celdas visibles
+        for (javafx.scene.Node node : songListView.lookupAll(".song-cell-container")) {
+            node.getStyleClass().remove("song-cell-drag-over");
+            node.getStyleClass().remove("song-cell-dragging");
+        }
+        for (javafx.scene.Node node : songListView.lookupAll(".list-cell")) {
+            node.getStyleClass().remove("song-cell-drag-over");
+            node.getStyleClass().remove("song-cell-dragging");
+        }
     }
 
     private void updateEmptyPlaceholderVisibility() {
