@@ -30,7 +30,7 @@
             <HBox alignment="CENTER_LEFT" spacing="10" styleClass="logo-section">
                 <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
                 <FontIcon iconLiteral="fas-wave-square" iconSize="24" styleClass="logo-icon"/>
-                <Label text="AudioFlow" styleClass="logo-text"/>
+                <Label text="MusicStream" styleClass="logo-text"/>
             </HBox>
             
             <!-- Menú Principal -->
@@ -67,9 +67,11 @@
                 
                 <!-- Imagen de Playlist -->
                 <StackPane fx:id="playlistCover" styleClass="playlist-cover" prefWidth="180" prefHeight="180">
-                    <VBox alignment="CENTER" spacing="5">
-                        <FontIcon iconLiteral="fas-compact-disc" iconSize="60" styleClass="cover-placeholder-icon"/>
-                    </VBox>
+                    <ImageView fitWidth="180" fitHeight="180" preserveRatio="true" smooth="true">
+                        <image>
+                            <Image url="@../images/library-header.png"/>
+                        </image>
+                    </ImageView>
                 </StackPane>
                 
                 <!-- Info de Playlist -->
@@ -126,8 +128,18 @@
             
             <Separator styleClass="table-separator"/>
             
-            <!-- Lista de Canciones -->
-            <JFXListView fx:id="songListView" styleClass="song-table" VBox.vgrow="ALWAYS"/>
+            <!-- Contenedor para lista y placeholder vacío -->
+            <StackPane VBox.vgrow="ALWAYS">
+                <!-- Placeholder cuando está vacío -->
+                <VBox fx:id="emptyPlaceholder" alignment="CENTER" spacing="15" styleClass="empty-placeholder">
+                    <FontIcon iconLiteral="fas-music" iconSize="48" styleClass="empty-icon"/>
+                    <Label text="Tu biblioteca está vacía" styleClass="empty-title"/>
+                    <Label text="Arrastra archivos de música aquí para comenzar" styleClass="empty-subtitle"/>
+                </VBox>
+                
+                <!-- Lista de Canciones -->
+                <JFXListView fx:id="songListView" styleClass="song-table"/>
+            </StackPane>
             
         </VBox>
     </center>
