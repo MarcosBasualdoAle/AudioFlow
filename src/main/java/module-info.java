@@ -15,6 +15,7 @@ module com.audioflow {
     opens com.audioflow to javafx.fxml;
     opens com.audioflow.controller to javafx.fxml;
     opens com.audioflow.model to javafx.base;
+    opens com.audioflow.component to javafx.fxml;
 
     // Exportar paquetes principales
     exports com.audioflow;
@@ -22,4 +23,5 @@ module com.audioflow {
     exports com.audioflow.model;
     exports com.audioflow.service;
     exports com.audioflow.util;
+    exports com.audioflow.component;
 }
