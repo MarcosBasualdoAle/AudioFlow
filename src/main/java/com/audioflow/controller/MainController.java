@@ -9,13 +9,19 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXSlider;
 import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -31,7 +37,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -471,7 +480,49 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleMinimizeToMiniPlayer() {
-        System.out.println("ℹ️ Mini Player - próxima fase");
+        try {
+            // Cargar el FXML del Mini Player
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/audioflow/views/mini-player-view.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador y pasar referencia
+            MiniPlayerController miniController = loader.getController();
+            miniController.setMainController(this);
+
+            // Crear nueva ventana sin decoración
+            Stage miniStage = new Stage();
+            miniStage.initStyle(StageStyle.TRANSPARENT);
+            miniStage.setAlwaysOnTop(true);
+            miniStage.setTitle("AudioFlow Mini Player");
+
+            // Crear escena con fondo transparente
+            Scene scene = new Scene(root);
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets()
+                    .add(getClass().getResource("/com/audioflow/styles/mini-player.css").toExternalForm());
+
+            miniStage.setScene(scene);
+
+            // Animación de entrada suave
+            root.setOpacity(0);
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+
+            // Mostrar Mini Player
+            miniStage.show();
+            fadeIn.play();
+
+            // Ocultar ventana principal
+            Stage mainStage = (Stage) rootPane.getScene().getWindow();
+            mainStage.hide();
+
+            System.out.println("✓ Mini Player abierto");
+
+        } catch (Exception e) {
+            System.err.println("Error al abrir Mini Player: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // ========== DRAG & DROP GLOBAL (toda la app) ==========
@@ -514,32 +565,74 @@ public class MainController implements Initializable {
 
         boolean success = false;
         if (event.getDragboard().hasFiles()) {
-            List<Song> songs = new ArrayList<>();
+            List<Song> newSongs = new ArrayList<>();
+            List<String> duplicateTitles = new ArrayList<>();
+
             for (File file : event.getDragboard().getFiles()) {
                 if (file.isDirectory()) {
-                    processDirectory(file, songs);
+                    processDirectoryWithDuplicateCheck(file, newSongs, duplicateTitles);
                 } else if (DragDropHandler.isAudioFile(file)) {
-                    songs.add(DragDropHandler.createSongFromFile(file));
+                    // Verificar si ya existe
+                    if (playlist.containsSongByPath(file.getAbsolutePath())) {
+                        String fileName = file.getName();
+                        duplicateTitles.add(fileName.substring(0, fileName.lastIndexOf('.')));
+                    } else {
+                        newSongs.add(DragDropHandler.createSongFromFile(file));
+                    }
                 }
             }
 
-            if (!songs.isEmpty()) {
-                for (Song song : songs) {
+            // Agregar solo las canciones nuevas
+            if (!newSongs.isEmpty()) {
+                for (Song song : newSongs) {
                     playlist.addSong(song);
                 }
                 updateFilteredList();
                 updatePlaylistStats();
 
-                if (playlist.size() == songs.size()) {
+                if (playlist.size() == newSongs.size()) {
                     loadCurrentSong();
                 }
                 success = true;
-                System.out.println("✓ " + songs.size() + " canciones agregadas");
+
+                // Mostrar notificación de éxito
+                String message = newSongs.size() == 1
+                        ? "✓ Música agregada correctamente"
+                        : "✓ " + newSongs.size() + " músicas agregadas correctamente";
+                showToast(message, false);
+                System.out.println(message);
+            }
+
+            // Mostrar notificación de duplicados
+            if (!duplicateTitles.isEmpty()) {
+                String dupMessage = duplicateTitles.size() == 1
+                        ? "⚠ \"" + duplicateTitles.get(0) + "\" ya existe en la biblioteca"
+                        : "⚠ " + duplicateTitles.size() + " canciones ya existen en la biblioteca";
+                showToast(dupMessage, true);
+                System.out.println(dupMessage);
             }
         }
 
         event.setDropCompleted(success);
         event.consume();
+    }
+
+    private void processDirectoryWithDuplicateCheck(File directory, List<Song> newSongs, List<String> duplicateTitles) {
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    processDirectoryWithDuplicateCheck(file, newSongs, duplicateTitles);
+                } else if (DragDropHandler.isAudioFile(file)) {
+                    if (playlist.containsSongByPath(file.getAbsolutePath())) {
+                        String fileName = file.getName();
+                        duplicateTitles.add(fileName.substring(0, fileName.lastIndexOf('.')));
+                    } else {
+                        newSongs.add(DragDropHandler.createSongFromFile(file));
+                    }
+                }
+            }
+        }
     }
 
     // ========== MÉTODOS AUXILIARES ==========
@@ -832,5 +925,79 @@ public class MainController implements Initializable {
             songListView.refresh();
             updatePlaylistStats();
         }
+    }
+
+    // ========== NOTIFICACIONES TOAST ==========
+
+    private void showToast(String message, boolean isWarning) {
+        Platform.runLater(() -> {
+            // Crear el contenedor del toast
+            HBox toast = new HBox(10);
+            toast.setAlignment(Pos.CENTER_LEFT);
+            toast.setPadding(new Insets(12, 20, 12, 20));
+            toast.setStyle(
+                    "-fx-background-color: " + (isWarning ? "rgba(234, 179, 8, 0.95)" : "rgba(34, 197, 94, 0.95)") + ";"
+                            +
+                            "-fx-background-radius: 8;" +
+                            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 4);");
+
+            // Icono
+            FontIcon icon = new FontIcon(isWarning ? "fas-exclamation-circle" : "fas-check-circle");
+            icon.setIconSize(18);
+            icon.setIconColor(isWarning ? Color.rgb(113, 63, 18) : Color.rgb(20, 83, 45));
+
+            // Texto
+            Label label = new Label(message);
+            label.setStyle(
+                    "-fx-text-fill: " + (isWarning ? "#713f12" : "#14532d") + ";" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-font-weight: bold;");
+
+            toast.getChildren().addAll(icon, label);
+
+            // Usar Popup para mostrar el toast
+            if (rootPane != null && rootPane.getScene() != null && rootPane.getScene().getWindow() != null) {
+                javafx.stage.Popup popup = new javafx.stage.Popup();
+                popup.getContent().add(toast);
+                popup.setAutoHide(false);
+
+                // Obtener la ventana y calcular posición
+                javafx.stage.Window window = rootPane.getScene().getWindow();
+
+                // Posicionar en esquina inferior derecha
+                double x = window.getX() + window.getWidth() - 400;
+                double y = window.getY() + window.getHeight() - 150;
+
+                toast.setOpacity(0);
+                toast.setTranslateY(20);
+
+                popup.show(window, x, y);
+
+                // Animación de entrada
+                Timeline fadeIn = new Timeline(
+                        new KeyFrame(Duration.ZERO,
+                                new KeyValue(toast.opacityProperty(), 0),
+                                new KeyValue(toast.translateYProperty(), 20)),
+                        new KeyFrame(Duration.millis(300),
+                                new KeyValue(toast.opacityProperty(), 1),
+                                new KeyValue(toast.translateYProperty(), 0)));
+
+                // Esperar y luego desvanecer
+                PauseTransition pause = new PauseTransition(Duration.seconds(3));
+
+                Timeline fadeOut = new Timeline(
+                        new KeyFrame(Duration.ZERO,
+                                new KeyValue(toast.opacityProperty(), 1)),
+                        new KeyFrame(Duration.millis(300),
+                                new KeyValue(toast.opacityProperty(), 0)));
+
+                fadeOut.setOnFinished(e -> popup.hide());
+
+                fadeIn.setOnFinished(e -> pause.play());
+                pause.setOnFinished(e -> fadeOut.play());
+
+                fadeIn.play();
+            }
+        });
     }
 }

@@ -278,12 +278,22 @@
 
 .col-index {
     -fx-alignment: center;
+    -fx-min-width: 50;
+    -fx-pref-width: 50;
+}
+
+.col-album {
+    -fx-min-width: 200;
+    -fx-pref-width: 200;
 }
 
 .col-duration-icon {
     -fx-icon-color: #6B7280;
     -fx-fill: #6B7280;
-    -fx-padding: 0 30 0 0;
+    -fx-min-width: 60;
+    -fx-pref-width: 60;
+    -fx-alignment: center-right;
+    -fx-padding: 0 15 0 0;
 }
 
 .table-separator {
@@ -335,6 +345,7 @@
     -fx-font-size: 14px;
     -fx-text-fill: #6B7280;
     -fx-min-width: 50;
+    -fx-pref-width: 50;
     -fx-alignment: center;
 }
 
@@ -352,13 +363,16 @@
     -fx-font-size: 13px;
     -fx-text-fill: #A1A1A1;
     -fx-min-width: 200;
+    -fx-pref-width: 200;
 }
 
 .song-cell-duration {
     -fx-font-size: 13px;
     -fx-text-fill: #A1A1A1;
-    -fx-min-width: 50;
+    -fx-min-width: 60;
+    -fx-pref-width: 60;
     -fx-alignment: center-right;
+    -fx-padding: 0 15 0 0;
 }
 
 .song-cell-playing .song-cell-title {
@@ -518,8 +532,8 @@
 }
 
 .play-btn-main .ikonli-font-icon {
-    -fx-icon-color: #000000;
-    -fx-fill: #000000;
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
 }
 
 /* Slider de Volumen */

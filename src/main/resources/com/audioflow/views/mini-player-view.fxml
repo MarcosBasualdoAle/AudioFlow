@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import com.jfoenix.controls.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<!--
+    AudioFlow - Mini Player (Widget Flotante)
+    Diseño compacto con glassmorphism
+    @author Brickzon
+-->
+
+<StackPane fx:id="rootPane"
+           xmlns="http://javafx.com/javafx/21" 
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.audioflow.controller.MiniPlayerController"
+           styleClass="mini-player-root"
+           prefWidth="340" prefHeight="130">
+
+    <!-- Contenedor Principal -->
+    <VBox styleClass="mini-player-container" spacing="0">
+        
+        <!-- Botón de Cerrar (esquina superior derecha) -->
+        <StackPane alignment="TOP_RIGHT">
+            <padding><Insets top="8" right="8" bottom="0" left="0"/></padding>
+            <JFXButton fx:id="closeBtn" onAction="#handleClose" styleClass="close-btn">
+                <graphic><FontIcon iconLiteral="fas-times" iconSize="12"/></graphic>
+            </JFXButton>
+        </StackPane>
+        
+        <!-- Contenido Principal -->
+        <HBox spacing="15" alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
+            <padding><Insets top="0" right="20" bottom="15" left="20"/></padding>
+            
+            <!-- Album Art -->
+            <StackPane fx:id="albumArtContainer" styleClass="mini-album-art-container" 
+                       prefWidth="60" prefHeight="60" minWidth="60" minHeight="60">
+                <ImageView fx:id="albumArtView" fitWidth="60" fitHeight="60" preserveRatio="true"/>
+                <FontIcon fx:id="albumArtPlaceholder" iconLiteral="fas-compact-disc" iconSize="28" styleClass="album-placeholder"/>
+            </StackPane>
+            
+            <!-- Info de Canción -->
+            <VBox spacing="3" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="160">
+                <Label fx:id="songTitleLabel" text="Midnight City" styleClass="mini-song-title" 
+                       maxWidth="160" ellipsisString="..."/>
+                <Label fx:id="artistLabel" text="M83 • Hurry Up, We're Dreaming" styleClass="mini-artist" 
+                       maxWidth="160" ellipsisString="..."/>
+            </VBox>
+            
+            <!-- Botón Favorito -->
+            <JFXButton fx:id="favoriteBtn" onAction="#handleFavorite" styleClass="favorite-btn">
+                <graphic><FontIcon fx:id="favoriteIcon" iconLiteral="far-heart" iconSize="18"/></graphic>
+            </JFXButton>
+        </HBox>
+        
+        <!-- Controles de Reproducción -->
+        <HBox spacing="20" alignment="CENTER" styleClass="mini-controls">
+            <padding><Insets top="0" right="20" bottom="12" left="20"/></padding>
+            
+            <JFXButton fx:id="prevBtn" onAction="#handlePrevious" styleClass="mini-control-btn">
+                <graphic><FontIcon iconLiteral="fas-step-backward" iconSize="14"/></graphic>
+            </JFXButton>
+            
+            <JFXButton fx:id="playPauseBtn" onAction="#handlePlayPause" styleClass="mini-play-btn">
+                <graphic><FontIcon fx:id="playPauseIcon" iconLiteral="fas-pause" iconSize="18"/></graphic>
+            </JFXButton>
+            
+            <JFXButton fx:id="nextBtn" onAction="#handleNext" styleClass="mini-control-btn">
+                <graphic><FontIcon iconLiteral="fas-step-forward" iconSize="14"/></graphic>
+            </JFXButton>
+        </HBox>
+        
+        <!-- Barra de Progreso (borde inferior) -->
+        <HBox fx:id="progressContainer" styleClass="mini-progress-container" prefHeight="3" maxHeight="3">
+            <StackPane fx:id="progressFill" styleClass="mini-progress-fill" prefWidth="120" prefHeight="3"/>
+        </HBox>
+        
+    </VBox>
+    
+</StackPane>

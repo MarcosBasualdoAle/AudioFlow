@@ -116,12 +116,17 @@
             </HBox>
             
             <!-- Encabezado de Tabla -->
-            <HBox styleClass="table-header" spacing="0" alignment="CENTER_LEFT">
+            <HBox styleClass="table-header" spacing="12" alignment="CENTER_LEFT">
                 <padding><Insets top="10" right="30" bottom="10" left="30"/></padding>
-                <Label text="#" styleClass="col-index" prefWidth="50"/>
+                <Label text="#" styleClass="col-index" prefWidth="50" minWidth="50"/>
+                <!-- Espacio para album art -->
+                <Region prefWidth="40" minWidth="40"/>
                 <Label text="TÍTULO" styleClass="col-title" HBox.hgrow="ALWAYS"/>
-                <Label text="ÁLBUM" styleClass="col-album" prefWidth="200"/>
-                <FontIcon iconLiteral="far-clock" iconSize="14" styleClass="col-duration-icon"/>
+                <Label text="ÁLBUM" styleClass="col-album" prefWidth="200" minWidth="200"/>
+                <HBox prefWidth="60" minWidth="60" alignment="CENTER_RIGHT">
+                    <padding><Insets right="15"/></padding>
+                    <FontIcon iconLiteral="far-clock" iconSize="14" styleClass="col-duration-icon"/>
+                </HBox>
             </HBox>
             
             <Separator styleClass="table-separator"/>
