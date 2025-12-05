@@ -1,0 +1,211 @@
+/*
+ * AudioFlow - Mini Player Styles
+ * Widget flotante con efecto glassmorphism
+ * @author Brickzon
+ */
+
+/* ==================== CONTENEDOR PRINCIPAL ==================== */
+.mini-player-root {
+    -fx-background-color: transparent;
+}
+
+.mini-player-container {
+    -fx-background-color: rgba(30, 30, 30, 0.92);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 25, 0, 0, 8);
+}
+
+/* ==================== BOTÓN CERRAR ==================== */
+.close-btn {
+    -fx-background-color: transparent;
+    -fx-min-width: 24;
+    -fx-min-height: 24;
+    -fx-max-width: 24;
+    -fx-max-height: 24;
+    -fx-cursor: hand;
+    -fx-background-radius: 12;
+}
+
+.close-btn .ikonli-font-icon {
+    -fx-icon-color: #6B7280;
+    -fx-fill: #6B7280;
+}
+
+.close-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.close-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+/* ==================== ALBUM ART ==================== */
+.mini-album-art-container {
+    -fx-background-color: #282828;
+    -fx-background-radius: 30;
+    -fx-min-width: 60;
+    -fx-min-height: 60;
+    -fx-max-width: 60;
+    -fx-max-height: 60;
+}
+
+.album-placeholder {
+    -fx-icon-color: #4B5563;
+    -fx-fill: #4B5563;
+}
+
+/* ==================== INFO DE CANCIÓN ==================== */
+.mini-song-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-wrap-text: false;
+}
+
+.mini-artist {
+    -fx-font-size: 12px;
+    -fx-text-fill: #9CA3AF;
+    -fx-wrap-text: false;
+}
+
+/* ==================== BOTÓN FAVORITO ==================== */
+.favorite-btn {
+    -fx-background-color: transparent;
+    -fx-min-width: 36;
+    -fx-min-height: 36;
+    -fx-cursor: hand;
+}
+
+.favorite-btn .ikonli-font-icon {
+    -fx-icon-color: #9CA3AF;
+    -fx-fill: #9CA3AF;
+}
+
+.favorite-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+.favorite-active {
+    -fx-icon-color: #EF4444 !important;
+    -fx-fill: #EF4444 !important;
+}
+
+/* ==================== CONTROLES DE REPRODUCCIÓN ==================== */
+.mini-controls {
+    -fx-background-color: transparent;
+}
+
+.mini-control-btn {
+    -fx-background-color: transparent;
+    -fx-min-width: 36;
+    -fx-min-height: 36;
+    -fx-cursor: hand;
+}
+
+.mini-control-btn .ikonli-font-icon {
+    -fx-icon-color: #9CA3AF;
+    -fx-fill: #9CA3AF;
+}
+
+.mini-control-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+.mini-play-btn {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 50%;
+    -fx-min-width: 42;
+    -fx-min-height: 42;
+    -fx-max-width: 42;
+    -fx-max-height: 42;
+    -fx-cursor: hand;
+}
+
+.mini-play-btn:hover {
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+.mini-play-btn .ikonli-font-icon {
+    -fx-icon-color: #000000;
+    -fx-fill: #000000;
+}
+
+/* ==================== BARRA DE PROGRESO ==================== */
+.mini-progress-container {
+    -fx-background-color: #374151;
+    -fx-background-radius: 0 0 16 16;
+    -fx-alignment: center-left;
+}
+
+.mini-progress-fill {
+    -fx-background-color: #3B82F6;
+    -fx-background-radius: 0 0 0 16;
+    -fx-min-height: 3;
+    -fx-max-height: 3;
+}
+
+/* ==================== DIÁLOGO DE CONFIRMACIÓN ==================== */
+.mini-player-dialog {
+    -fx-background-color: #1E1E1E;
+}
+
+.mini-player-dialog .dialog-pane {
+    -fx-background-color: #1E1E1E;
+    -fx-border-color: #374151;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.mini-player-dialog .dialog-pane>.content {
+    -fx-background-color: #1E1E1E;
+    -fx-padding: 20;
+}
+
+.mini-player-dialog .dialog-pane>.button-bar {
+    -fx-background-color: #1E1E1E;
+    -fx-padding: 10 20 15 20;
+}
+
+.mini-player-dialog .dialog-pane>.button-bar>.container {
+    -fx-background-color: #1E1E1E;
+}
+
+.mini-player-dialog .header-panel {
+    -fx-background-color: #1E1E1E;
+}
+
+.mini-player-dialog .header-panel .label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.mini-player-dialog .label {
+    -fx-text-fill: #D1D5DB;
+}
+
+.mini-player-dialog .button {
+    -fx-background-color: #374151;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.mini-player-dialog .button:hover {
+    -fx-background-color: #4B5563;
+}
+
+.mini-player-dialog .button:focused {
+    -fx-background-color: #3B82F6;
+}
+
+/* ==================== ANIMACIONES ==================== */
+.mini-player-container {
+    -fx-opacity: 1;
+}

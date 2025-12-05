@@ -8,13 +8,17 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXSlider;
 import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -27,7 +31,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -451,7 +458,49 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleMinimizeToMiniPlayer() {
-        System.out.println("ℹ️ Mini Player - próxima fase");
+        try {
+            // Cargar el FXML del Mini Player
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/audioflow/views/mini-player-view.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador y pasar referencia
+            MiniPlayerController miniController = loader.getController();
+            miniController.setMainController(this);
+
+            // Crear nueva ventana sin decoración
+            Stage miniStage = new Stage();
+            miniStage.initStyle(StageStyle.TRANSPARENT);
+            miniStage.setAlwaysOnTop(true);
+            miniStage.setTitle("AudioFlow Mini Player");
+
+            // Crear escena con fondo transparente
+            Scene scene = new Scene(root);
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets()
+                    .add(getClass().getResource("/com/audioflow/styles/mini-player.css").toExternalForm());
+
+            miniStage.setScene(scene);
+
+            // Animación de entrada suave
+            root.setOpacity(0);
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+
+            // Mostrar Mini Player
+            miniStage.show();
+            fadeIn.play();
+
+            // Ocultar ventana principal
+            Stage mainStage = (Stage) rootPane.getScene().getWindow();
+            mainStage.hide();
+
+            System.out.println("✓ Mini Player abierto");
+
+        } catch (Exception e) {
+            System.err.println("Error al abrir Mini Player: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // ========== DRAG & DROP GLOBAL (toda la app) ==========
